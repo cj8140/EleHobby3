@@ -1,6 +1,7 @@
 //Elehobby3 Coding P4 Zaku Factory V0.1 2026.02.21 By Kyoji Park
 //Elehobby3 Coding P4 Zaku Factory V0.2 2026.03.01 By Kyoji Park
 //Elehobby3 Coding P4 Zaku Factory V1.0 2026.03.01 By C.j. Park
+//Elehobby3 Coding P4 Zaku Factory V1.1 2026.03.02 By Kypji Park ; Change bridge1 angle close 134->170, open 51->87 ; Crane 왼쪽붙이기 ; Motor1,2 Analog Write
 
 #define DELAY_CRANE 30
 #define DELAY_BRIDGE 20
@@ -30,7 +31,7 @@ Servo ServoLift;             //D9 [LOW 0], HIGH 79
 #define LED_BRIDGE_MONITOR 51  //100ohm/blue wire
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
-Servo ServoBridge1;            //D46 CLOSE 134, [OPEN 51]
+Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 87]
 Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 17]
 
 //Body
@@ -53,7 +54,7 @@ Servo ServoTorch;          //D44 LOW 52, [HIGH 103]
 #define SW_DOME A3       // Cockpit Dome LED White
 #define SW_MONITOR A4    // Cockpit Monitor LED White
 #define POT_HATCH A5     // Hatch Servo ; Close(Servo Angle88 / Open(Servo Angle 132)
-#define POT_BRIDGE A6    // Bridge Servo ; Undock BRIDGE1(CLOSE 134, [OPEN 51]) / BRIDGE2(D45 CLOSE 78, [OPEN 17])
+#define POT_BRIDGE A6    // Bridge Servo ; Undock BRIDGE1(CLOSE 170, [OPEN 87]) / BRIDGE2(D45 CLOSE 78, [OPEN 17])
 #define POT_LIFT A7      // LIFT Servo [LOW 0], HIGH 79
 #define SW_JOY_HOIST 24  // CRANE Servo UP LOW 49, [HIGH 105]
 #define SW_JOY_LOWER 25  // CRANE Servo UP LOW 49, [HIGH 105]
@@ -69,7 +70,7 @@ int hatch_state = 0;
 int prev_hatch_state = 0;
 
 int prev_pot_bridge_value = 1023;
-int bridge1Angle = 51;
+int bridge1Angle = 87;
 unsigned long lastBridgeTime = 0;
 
 int prev_pot_lift_value = 3;
@@ -96,7 +97,7 @@ void setup()
   ServoHatch.attach(2);
   ServoHatch.write(90);  // [CLOSE 90], OPEN 132
   ServoBridge1.attach(46);
-  ServoBridge1.write(51);  // CLOSE 134, [OPEN 51]
+  ServoBridge1.write(87);  // CLOSE 134, [OPEN 51]
   ServoBridge2.attach(45);
   ServoBridge2.write(17);  // CLOSE 78, [OPEN 17]
   ServoLift.attach(9);
@@ -138,14 +139,14 @@ void setup()
 
   ws_eye[0] = CRGB(255, 255, 0);
   FastLED.show();
-  while (digitalRead(SW_LIMIT_RIGHT) == HIGH) {   //오른쪽붙이기
-    digitalWrite(MOTOR1, HIGH);
-    digitalWrite(MOTOR2, LOW);
-  }
-  // while (digitalRead(SW_LIMIT_LEFT) == HIGH) {   //왼쪽붙이기
-  //   digitalWrite(MOTOR1, LOW);
-  //   digitalWrite(MOTOR2, HIGH);
-  // }
+//  while (digitalRead(SW_LIMIT_RIGHT) == HIGH) {   //오른쪽붙이기
+//    digitalWrite(MOTOR1, HIGH);
+//    digitalWrite(MOTOR2, LOW);
+//  }
+   while (digitalRead(SW_LIMIT_LEFT) == HIGH) {   //왼쪽붙이기
+     digitalWrite(MOTOR1, LOW);
+     digitalWrite(MOTOR2, HIGH);
+   }
   digitalWrite(MOTOR1, LOW);
   digitalWrite(MOTOR2, LOW);
 }
@@ -166,12 +167,12 @@ void loop()
     digitalWrite(LED_CRANE_MONITOR, HIGH);
   }
   if (digitalRead(SW_JOY_RIGHT) == LOW && digitalRead(SW_LIMIT_RIGHT) == HIGH) {
-    digitalWrite(MOTOR1, HIGH);
+    analogWrite(MOTOR1, 100);
     digitalWrite(MOTOR2, LOW);
   }
   else if (digitalRead(SW_JOY_LEFT) == LOW && digitalRead(SW_LIMIT_LEFT) == HIGH) {
     digitalWrite(MOTOR1, LOW);
-    digitalWrite(MOTOR2, HIGH);
+    analogWrite(MOTOR2, 100);
   }
   else {
     digitalWrite(MOTOR1, LOW);
@@ -264,7 +265,7 @@ void loop()
   int bridge1WantedAngle;
   // Serial.println(pot_bridge_value);
   if (abs(prev_pot_bridge_value - pot_bridge_value) > 15) {
-    bridge1WantedAngle = map(pot_bridge_value, 679, 1023, 134, 51);
+    bridge1WantedAngle = map(pot_bridge_value, 679, 1023, 170, 87);
     prev_pot_bridge_value = pot_bridge_value;
   }
   if (bridge1Angle != bridge1WantedAngle && (millis() - lastBridgeTime) > DELAY_BRIDGE) {
@@ -280,7 +281,7 @@ void loop()
     digitalWrite(LED_BRIDGE_RED1, LOW);
     digitalWrite(LED_BRIDGE_RED2, LOW);
   }
-  if (bridge1Angle > 130) {
+  if (bridge1Angle > 160) {
     digitalWrite(LED_BRIDGE_MONITOR, HIGH);
   }
   else {
