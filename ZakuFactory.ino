@@ -2,6 +2,7 @@
 //Elehobby3 Coding P4 Zaku Factory V0.2 2026.03.01 By Kyoji Park
 //Elehobby3 Coding P4 Zaku Factory V1.0 2026.03.01 By C.j. Park
 //Elehobby3 Coding P4 Zaku Factory V1.1 2026.03.02 By Kypji Park ; Change bridge1 angle close 134->170, open 51->87 ; Crane 왼쪽붙이기 ; Motor1,2 Analog Write
+//Elehobby3 Coding P4 Zaku Factory V1.2 2026.03.02 By C.J.Park Bridge Angle Adjust, Blinking Cockpit Light.
 
 #define DELAY_CRANE 30
 #define DELAY_BRIDGE 20
@@ -31,8 +32,8 @@ Servo ServoLift;             //D9 [LOW 0], HIGH 79
 #define LED_BRIDGE_MONITOR 51  //100ohm/blue wire
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
-Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 87]
-Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 17]
+Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 90]
+Servo ServoBridge2;            //D45 CLOSE 82, [OPEN 21]
 
 //Body
 #define LED_DOME 6     //220ohm/white wire
@@ -71,11 +72,15 @@ int prev_hatch_state = 0;
 
 int prev_pot_bridge_value = 1023;
 int bridge1Angle = 87;
+int bridge1WantedAngle = 87;
 unsigned long lastBridgeTime = 0;
 
 int prev_pot_lift_value = 3;
 int liftAngle = 0;
+int liftWantedAngle = 0;
 unsigned long lastLiftTime = 0;
+
+
 
 void setup()
 {
@@ -135,44 +140,39 @@ void setup()
 
   pinMode(SW_MONITOR, INPUT_PULLUP);
   pinMode(SW_DOME, INPUT_PULLUP);
-  
+
 
   ws_eye[0] = CRGB(255, 255, 0);
   FastLED.show();
-//  while (digitalRead(SW_LIMIT_RIGHT) == HIGH) {   //오른쪽붙이기
-//    digitalWrite(MOTOR1, HIGH);
-//    digitalWrite(MOTOR2, LOW);
-//  }
-   while (digitalRead(SW_LIMIT_LEFT) == HIGH) {   //왼쪽붙이기
-     digitalWrite(MOTOR1, LOW);
-     digitalWrite(MOTOR2, HIGH);
-   }
+  //  while (digitalRead(SW_LIMIT_RIGHT) == HIGH) {   //오른쪽붙이기
+  //    digitalWrite(MOTOR1, HIGH);
+  //    digitalWrite(MOTOR2, LOW);
+  //  }
+  while (digitalRead(SW_LIMIT_LEFT) == HIGH) {  //왼쪽붙이기
+    digitalWrite(MOTOR1, LOW);
+    digitalWrite(MOTOR2, HIGH);
+  }
   digitalWrite(MOTOR1, LOW);
   digitalWrite(MOTOR2, LOW);
 }
 
 void loop()
 {
-  if(digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, HIGH);
-  else digitalWrite(LED_DOME, LOW);
-  if(digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, HIGH);
-  else digitalWrite(LED_MONITOR, LOW);
-
 
   //Crane
-  if(digitalRead(SW_LIMIT_LEFT)== LOW || digitalRead(SW_LIMIT_RIGHT)== LOW) {
+  if (digitalRead(SW_LIMIT_LEFT) == LOW || digitalRead(SW_LIMIT_RIGHT) == LOW) {
     digitalWrite(LED_CRANE_MONITOR, LOW);
   }
   else {
     digitalWrite(LED_CRANE_MONITOR, HIGH);
   }
   if (digitalRead(SW_JOY_RIGHT) == LOW && digitalRead(SW_LIMIT_RIGHT) == HIGH) {
-    analogWrite(MOTOR1, 100);
+    analogWrite(MOTOR1, 150);
     digitalWrite(MOTOR2, LOW);
   }
   else if (digitalRead(SW_JOY_LEFT) == LOW && digitalRead(SW_LIMIT_LEFT) == HIGH) {
     digitalWrite(MOTOR1, LOW);
-    analogWrite(MOTOR2, 100);
+    analogWrite(MOTOR2, 150);
   }
   else {
     digitalWrite(MOTOR1, LOW);
@@ -238,21 +238,31 @@ void loop()
   }
   prev_eye_state = eye_state;
 
-  //Hatch
+
   if (analogRead(POT_HATCH) > 1020) {  //Close
     hatch_state = 0;
+    digitalWrite(LED_DOME, LOW);
+    digitalWrite(LED_MONITOR, LOW);
   }
   else if (analogRead(POT_HATCH) < 700) {  //Open
     hatch_state = 1;
+    if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, HIGH);
+    else digitalWrite(LED_DOME, LOW);
+    if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, HIGH);
+    else digitalWrite(LED_MONITOR, LOW);
   }
-  if (hatch_state == 0 && prev_hatch_state != 0) {
+  if (hatch_state == 0 && prev_hatch_state != 0) {  //Close
     for (int i = 132; i >= 90; i--) {
+      if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
+      if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       ServoHatch.write(i);
       delay(20);
     }
   }
-  else if (hatch_state == 1 && prev_hatch_state != 1) {
+  else if (hatch_state == 1 && prev_hatch_state != 1) {  //Open
     for (int i = 90; i <= 132; i++) {
+      if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
+      if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       ServoHatch.write(i);
       delay(20);
     }
@@ -262,19 +272,20 @@ void loop()
 
   //Bridge DOCK-679 UNDOCK-1023
   int pot_bridge_value = analogRead(POT_BRIDGE);
-  int bridge1WantedAngle;
   // Serial.println(pot_bridge_value);
   if (abs(prev_pot_bridge_value - pot_bridge_value) > 15) {
-    bridge1WantedAngle = map(pot_bridge_value, 679, 1023, 170, 87);
+    bridge1WantedAngle = map(pot_bridge_value, 679, 1023, 170, 90);
     prev_pot_bridge_value = pot_bridge_value;
   }
   if (bridge1Angle != bridge1WantedAngle && (millis() - lastBridgeTime) > DELAY_BRIDGE) {
     digitalWrite(LED_BRIDGE_RED1, (millis() / 150) % 2);
     digitalWrite(LED_BRIDGE_RED2, (millis() / 150 + 0) % 2);
 
-    bridge1Angle += ((bridge1WantedAngle - bridge1Angle) > 0) * 2 - 1;
+    if (bridge1Angle < bridge1WantedAngle) bridge1Angle++;
+    else bridge1Angle--;
     ServoBridge1.write(bridge1Angle);
-    ServoBridge2.write(map(bridge1Angle, 51, 134, 17, 78));
+    Serial.println(bridge1Angle);
+    ServoBridge2.write(map(bridge1Angle, 170, 90, 82, 21));
     lastBridgeTime = millis();
   }
   if (bridge1Angle == bridge1WantedAngle) {
@@ -291,7 +302,6 @@ void loop()
 
   //Lift DOWN 3 ~ 1023 Up
   int pot_lift_value = analogRead(POT_LIFT);
-  int liftWantedAngle;
   if (abs(prev_pot_lift_value - pot_lift_value) > 5) {
     liftWantedAngle = map(pot_lift_value, 3, 1023, 0, 79);
     prev_pot_lift_value = pot_lift_value;
@@ -300,7 +310,8 @@ void loop()
     digitalWrite(LED_LIFT_RED1, (millis() / 150) % 2);
     digitalWrite(LED_LIFT_RED2, (millis() / 150 + 0) % 2);
 
-    liftAngle += ((liftWantedAngle - liftAngle) > 0) * 2 - 1;
+    if (liftAngle < liftWantedAngle) liftAngle++;
+    else liftAngle--;
     ServoLift.write(liftAngle);
     lastLiftTime = millis();
   }
