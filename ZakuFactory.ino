@@ -70,9 +70,10 @@ unsigned long lastCraneTime = 0;
 int hatch_state = 0;
 int prev_hatch_state = 0;
 
-int prev_pot_bridge_value = 1023;
-int bridge1Angle = 87;
-int bridge1WantedAngle = 87;
+float smooth_pot = 1023;
+
+int bridge1Angle = 90;
+int bridge1WantedAngle = 90;
 unsigned long lastBridgeTime = 0;
 
 int prev_pot_lift_value = 3;
@@ -102,9 +103,9 @@ void setup()
   ServoHatch.attach(2);
   ServoHatch.write(90);  // [CLOSE 90], OPEN 132
   ServoBridge1.attach(46);
-  ServoBridge1.write(87);  // CLOSE 134, [OPEN 51]
+  ServoBridge1.write(90);  // CLOSE 170, [OPEN 90]
   ServoBridge2.attach(45);
-  ServoBridge2.write(17);  // CLOSE 78, [OPEN 17]
+  ServoBridge2.write(21);  // CLOSE 82, [OPEN 21]
   ServoLift.attach(9);
   ServoLift.write(0);  // [LOW 0], HIGH 79
   ServoTorch.attach(44);
@@ -271,12 +272,11 @@ void loop()
 
 
   //Bridge DOCK-679 UNDOCK-1023
-  int pot_bridge_value = analogRead(POT_BRIDGE);
-  // Serial.println(pot_bridge_value);
-  if (abs(prev_pot_bridge_value - pot_bridge_value) > 15) {
-    bridge1WantedAngle = map(pot_bridge_value, 679, 1023, 170, 90);
-    prev_pot_bridge_value = pot_bridge_value;
-  }
+  smooth_pot = (0.2 * analogRead(POT_BRIDGE)) + (0.8 * smooth_pot);
+
+  bridge1WantedAngle = map((int)smooth_pot, 679, 1023, 170, 90);
+
+
   if (bridge1Angle != bridge1WantedAngle && (millis() - lastBridgeTime) > DELAY_BRIDGE) {
     digitalWrite(LED_BRIDGE_RED1, (millis() / 150) % 2);
     digitalWrite(LED_BRIDGE_RED2, (millis() / 150 + 0) % 2);
