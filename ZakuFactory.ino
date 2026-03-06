@@ -3,6 +3,8 @@
 //Elehobby3 Coding P4 Zaku Factory V1.0 2026.03.01 By C.j. Park
 //Elehobby3 Coding P4 Zaku Factory V1.1 2026.03.02 By Kypji Park ; Change bridge1 angle close 134->170, open 51->87 ; Crane 왼쪽붙이기 ; Motor1,2 Analog Write
 //Elehobby3 Coding P4 Zaku Factory V1.2 2026.03.02 By C.J.Park Bridge Angle Adjust, Blinking Cockpit Light.
+//Elehobby3 Coding P4 Zaku Factory V1.3 2026.03.03 By C.J.Park 브릿지 노이즈 방어 로직 수정
+//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.06 By Kyoji Angle adjust. ServoBridge2 82->78 ; ServoLift 79->70
 
 #define DELAY_CRANE 30
 #define DELAY_BRIDGE 20
@@ -26,14 +28,14 @@ Servo ServoCrane;             //D10 LOW 49, [HIGH 105]
 #define LED_LIFT_MONITOR 33  //100ohm/yellow wire
 #define LED_LIFT_RED1 34     //220ohm/red wire
 #define LED_LIFT_RED2 35     //220ohm/red wire
-Servo ServoLift;             //D9 [LOW 0], HIGH 79
+Servo ServoLift;             //D9 [LOW 0], HIGH 70
 
 //BRIDGE(Cockpit Access Panel)
 #define LED_BRIDGE_MONITOR 51  //100ohm/blue wire
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
 Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 90]
-Servo ServoBridge2;            //D45 CLOSE 82, [OPEN 21]
+Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 21]
 
 //Body
 #define LED_DOME 6     //220ohm/white wire
@@ -105,9 +107,9 @@ void setup()
   ServoBridge1.attach(46);
   ServoBridge1.write(90);  // CLOSE 170, [OPEN 90]
   ServoBridge2.attach(45);
-  ServoBridge2.write(21);  // CLOSE 82, [OPEN 21]
+  ServoBridge2.write(21);  // CLOSE 78, [OPEN 21]
   ServoLift.attach(9);
-  ServoLift.write(0);  // [LOW 0], HIGH 79
+  ServoLift.write(0);  // [LOW 0], HIGH 70
   ServoTorch.attach(44);
   ServoTorch.write(103);  // LOW 52, [HIGH 103]
   ServoCrane.attach(10);
@@ -285,7 +287,7 @@ void loop()
     else bridge1Angle--;
     ServoBridge1.write(bridge1Angle);
     Serial.println(bridge1Angle);
-    ServoBridge2.write(map(bridge1Angle, 170, 90, 82, 21));
+    ServoBridge2.write(map(bridge1Angle, 170, 90, 78, 21));
     lastBridgeTime = millis();
   }
   if (bridge1Angle == bridge1WantedAngle) {
@@ -303,7 +305,7 @@ void loop()
   //Lift DOWN 3 ~ 1023 Up
   int pot_lift_value = analogRead(POT_LIFT);
   if (abs(prev_pot_lift_value - pot_lift_value) > 5) {
-    liftWantedAngle = map(pot_lift_value, 3, 1023, 0, 79);
+    liftWantedAngle = map(pot_lift_value, 3, 1023, 0, 70);
     prev_pot_lift_value = pot_lift_value;
   }
   if (liftAngle != liftWantedAngle && (millis() - lastLiftTime) > DELAY_LIFT) {
