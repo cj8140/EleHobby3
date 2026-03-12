@@ -5,6 +5,7 @@
 //Elehobby3 Coding P4 Zaku Factory V1.2 2026.03.02 By C.J.Park Bridge Angle Adjust, Blinking Cockpit Light.
 //Elehobby3 Coding P4 Zaku Factory V1.3 2026.03.03 By C.J.Park 브릿지 노이즈 방어 로직 수정
 //Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.06 By Kyoji Angle adjust. ServoBridge2 82->78 ; ServoLift 79->70
+//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.011 By Kyoji Angle adjust. ServoBridge2 open 21->17 ; Add Mp3 player
 
 #define DELAY_CRANE 30
 #define DELAY_BRIDGE 20
@@ -35,12 +36,12 @@ Servo ServoLift;             //D9 [LOW 0], HIGH 70
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
 Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 90]
-Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 21]
+Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 17]
 
 //Body
 #define LED_DOME 6     //220ohm/white wire
 #define LED_MONITOR 5  //220ohm/green wire, *4=Blank
-#define SENSOR_NECK 3  //220ohm/green wire
+#define SENSOR_NECK 3  //Hall Sensor
 #define WS_EYE 36      //Robot Eye WS 2812 ; default = yellow; NECK_SENSOR 3 = purple; F3_SENSOR 49 = green;
 Servo ServoHatch;      //D2 [CLOSE 90], OPEN 132
 
@@ -82,19 +83,15 @@ int liftAngle = 0;
 int liftWantedAngle = 0;
 unsigned long lastLiftTime = 0;
 
-
-
 void setup()
 {
-  Serial.begin(9600);
-
-  mp3_set_serial(Serial);
+  Serial1.begin(9600);
+  mp3_set_serial(Serial1);
   mp3_set_volume(29);
   delay(50);
 
   FastLED.addLeds<WS2812, WS_EYE, GRB>(ws_eye, 1);
   FastLED.setBrightness(BRIGHTNESS);
-
 
   pinMode(22, OUTPUT);
   pinMode(23, OUTPUT);
@@ -106,7 +103,7 @@ void setup()
   ServoBridge1.attach(46);
   ServoBridge1.write(90);  // CLOSE 170, [OPEN 90]
   ServoBridge2.attach(45);
-  ServoBridge2.write(21);  // CLOSE 78, [OPEN 21]
+  ServoBridge2.write(17);  // CLOSE 78, [OPEN 17]
   ServoLift.attach(9);
   ServoLift.write(0);  // [LOW 0], HIGH 70
   ServoTorch.attach(44);
@@ -131,7 +128,6 @@ void setup()
   pinMode(SENSOR_NECK, INPUT_PULLUP);
   pinMode(SENSOR_3F, INPUT_PULLUP);
 
-
   pinMode(SW_JOY_HOIST, INPUT_PULLUP);
   pinMode(SW_JOY_LEFT, INPUT_PULLUP);
   pinMode(SW_JOY_LOWER, INPUT_PULLUP);
@@ -142,7 +138,6 @@ void setup()
 
   pinMode(SW_MONITOR, INPUT_PULLUP);
   pinMode(SW_DOME, INPUT_PULLUP);
-
 
   ws_eye[0] = CRGB(255, 255, 0);
   FastLED.show();
@@ -156,11 +151,13 @@ void setup()
   }
   digitalWrite(MOTOR1, LOW);
   digitalWrite(MOTOR2, LOW);
+
+  mp3_play(1);  // produced by
+//  mp3_play(2);  // 0004_factory-ambience.mp3
 }
 
 void loop()
 {
-
   //Crane
   if (digitalRead(SW_LIMIT_LEFT) == LOW || digitalRead(SW_LIMIT_RIGHT) == LOW) {
     digitalWrite(LED_CRANE_MONITOR, LOW);
@@ -182,7 +179,6 @@ void loop()
     digitalWrite(LED_CRANE_RED1, LOW);
     digitalWrite(LED_CRANE_RED2, LOW);
   }
-
 
   if (digitalRead(SW_JOY_HOIST) == LOW && millis() - lastCraneTime > DELAY_CRANE && craneAngle < 105) {
     lastCraneTime = millis();
@@ -208,11 +204,15 @@ void loop()
   int eye_state = (digitalRead(SENSOR_3F) << 1) | digitalRead(SENSOR_NECK);
 
   if (eye_state == 0b01 && prev_eye_state != 0b01) {  //3f
+    mp3_play(3);  // torch
+    delay(300);
+
     digitalWrite(LED_3F_MONITOR, HIGH);
     digitalWrite(MOTOR1, LOW);
     digitalWrite(MOTOR2, LOW);
-    ws_eye[0] = CRGB(0, 255, 0);
+    ws_eye[0] = CRGB(0, 255, 0); // Green color
     FastLED.show();
+
     for (int i = 103; i >= 52; i--) {
       ServoTorch.write(i);
       delay(5);
@@ -220,10 +220,10 @@ void loop()
     for (int j = 0; j < 3; j++) {
       for (int i = 0; i < 7; i++) {
         digitalWrite(LED_3F_TORCH, HIGH);
-        delay(50);
+        delay(60);
 
         digitalWrite(LED_3F_TORCH, LOW);
-        delay(50);
+        delay(60);
       }
       delay(200);
     }
@@ -240,7 +240,6 @@ void loop()
   }
   prev_eye_state = eye_state;
 
-
   if (analogRead(POT_HATCH) > 1020) {  //Close
     hatch_state = 0;
     digitalWrite(LED_DOME, LOW);
@@ -254,23 +253,27 @@ void loop()
     else digitalWrite(LED_MONITOR, LOW);
   }
   if (hatch_state == 0 && prev_hatch_state != 0) {  //Close
+  mp3_play(8); // hatch open sound
+  delay(300);
     for (int i = 132; i >= 90; i--) {
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       ServoHatch.write(i);
-      delay(20);
+      delay(50);
     }
   }
   else if (hatch_state == 1 && prev_hatch_state != 1) {  //Open
+  mp3_play(8);
+  delay(300);    
     for (int i = 90; i <= 132; i++) {
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       ServoHatch.write(i);
-      delay(20);
+      delay(50);
     }
+    mp3_play(9);  // MonoEye
   }
   prev_hatch_state = hatch_state;
-
 
   //Bridge DOCK-679 UNDOCK-1023
   bridge_smooth_pot = (0.1 * analogRead(POT_BRIDGE)) + (0.9 * bridge_smooth_pot);
@@ -285,7 +288,7 @@ void loop()
     if (bridge1Angle < bridge1WantedAngle) bridge1Angle++;
     else bridge1Angle--;
     ServoBridge1.write(bridge1Angle);
-    ServoBridge2.write(map(bridge1Angle, 170, 90, 78, 21));
+    ServoBridge2.write(map(bridge1Angle, 170, 90, 78, 17));
     lastBridgeTime = millis();
   }
   if (bridge1Angle == bridge1WantedAngle) {
@@ -298,7 +301,6 @@ void loop()
   else {
     digitalWrite(LED_BRIDGE_MONITOR, LOW);
   }
-
 
   //Lift DOWN 3 ~ 1023 Up
   
@@ -325,3 +327,18 @@ void loop()
     digitalWrite(LED_LIFT_MONITOR, LOW);
   }
 }
+
+/*
+Mp3 
+0001_producedby
+0002_factory_noise
+0003_torch_short
+0004_factory-ambience
+0005_lift
+0006_crane
+0007_bridge
+0008_hatch
+0009_monoeye
+0010_Groundcontrol
+0011_herewego
+*/
