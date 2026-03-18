@@ -4,12 +4,16 @@
 //Elehobby3 Coding P4 Zaku Factory V1.1 2026.03.02 By Kypji Park ; Change bridge1 angle close 134->170, open 51->87 ; Crane 왼쪽붙이기 ; Motor1,2 Analog Write
 //Elehobby3 Coding P4 Zaku Factory V1.2 2026.03.02 By C.J.Park Bridge Angle Adjust, Blinking Cockpit Light.
 //Elehobby3 Coding P4 Zaku Factory V1.3 2026.03.03 By C.J.Park 브릿지 노이즈 방어 로직 수정
-//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.06 By Kyoji Angle adjust. ServoBridge2 82->78 ; ServoLift 79->70
-//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.011 By Kyoji Angle adjust. ServoBridge2 open 21->17 ; Add Mp3 player
+//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.06 By Kyoji Angle adjust. servo_bridge2 82->78 ; servo_lift 79->70
+//Elehobby3 Coding P4 Zaku Factory V1.5 2026.03.011 By Kyoji Angle adjust. servo_bridge2 open 21->17 ; Add Mp3 player
+
+//Elehobby3 Coding P4 Zaku Factory V1.6 2026.03.011 By C.J.Park 네이밍 수정, 주석 추가
 
 #define DELAY_CRANE 30
+#define DELAY_HATCH 20
 #define DELAY_BRIDGE 20
 #define DELAY_LIFT 40
+#define DELAY_ALARM 150
 
 #include <Servo.h>
 #include <DFPlayer_Mini_Mp3.h>
@@ -23,27 +27,27 @@
 #define LED_CRANE_RED1 37     //220ohm/red wire
 #define LED_CRANE_RED2 38     //220ohm/red wire
 #define LED_CRANE_MONITOR 39  //100ohm/blue wire
-Servo ServoCrane;             //D10 LOW 49, [HIGH 105]
+Servo servo_crane;             //D10 LOW 49, [HIGH 105]
 
 //LIFT(Aerial Work Platform)
 #define LED_LIFT_MONITOR 33  //100ohm/yellow wire
 #define LED_LIFT_RED1 34     //220ohm/red wire
 #define LED_LIFT_RED2 35     //220ohm/red wire
-Servo ServoLift;             //D9 [LOW 0], HIGH 70
+Servo servo_lift;             //D9 [LOW 0], HIGH 70
 
 //BRIDGE(Cockpit Access Panel)
 #define LED_BRIDGE_MONITOR 51  //100ohm/blue wire
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
-Servo ServoBridge1;            //D46 CLOSE 170, [OPEN 90]
-Servo ServoBridge2;            //D45 CLOSE 78, [OPEN 17]
+Servo servo_bridge1;            //D46 CLOSE 170, [OPEN 90]
+Servo servo_bridge2;            //D45 CLOSE 78, [OPEN 17]
 
 //Body
 #define LED_DOME 6     //220ohm/white wire
 #define LED_MONITOR 5  //220ohm/green wire, *4=Blank
-#define SENSOR_NECK 3  //Hall Sensor
-#define WS_EYE 36      //Robot Eye WS 2812 ; default = yellow; NECK_SENSOR 3 = purple; F3_SENSOR 49 = green;
-Servo ServoHatch;      //D2 [CLOSE 90], OPEN 132
+#define HALL_NECK 3  //Hall Sensor
+#define WS_EYE 36      //Robot Eye WS 2812 ; default = yellow; HALL_NECK 3 = purple; HALL_3F 49 = green;
+Servo servo_hatch;      //D2 [CLOSE 90], OPEN 132
 
 CRGB ws_eye[1];
 #define BRIGHTNESS 100  // 밝기 (0~255)
@@ -51,8 +55,8 @@ CRGB ws_eye[1];
 //3F
 #define LED_3F_TORCH 47    //220ohm/yellow wire
 #define LED_3F_MONITOR 48  //100ohm/blue wire
-#define SENSOR_3F 49       //220ohm/green wire
-Servo ServoTorch;          //D44 LOW 52, [HIGH 103]
+#define HALL_3F 49       //220ohm/green wire
+Servo servo_torch;          //D44 LOW 52, [HIGH 103]
 
 //Controller
 #define SW_DOME A3       // Cockpit Dome LED White
@@ -65,23 +69,7 @@ Servo ServoTorch;          //D44 LOW 52, [HIGH 103]
 #define SW_JOY_LEFT 26   // CRANE Motor
 #define SW_JOY_RIGHT 27  // CRANE Motor
 
-int prev_eye_state = 1;
 
-int craneAngle = 105;
-unsigned long lastCraneTime = 0;
-
-int hatch_state = 0;
-int prev_hatch_state = 0;
-
-float bridge_smooth_pot = 1023;
-int bridge1Angle = 90;
-int bridge1WantedAngle = 90;
-unsigned long lastBridgeTime = 0;
-
-float lift_smooth_pot = 0;
-int liftAngle = 0;
-int liftWantedAngle = 0;
-unsigned long lastLiftTime = 0;
 
 void setup()
 {
@@ -98,18 +86,18 @@ void setup()
   digitalWrite(22, LOW);  // Controller GND
   digitalWrite(23, LOW);  // Controller GND
 
-  ServoHatch.attach(2);
-  ServoHatch.write(90);  // [CLOSE 90], OPEN 132
-  ServoBridge1.attach(46);
-  ServoBridge1.write(90);  // CLOSE 170, [OPEN 90]
-  ServoBridge2.attach(45);
-  ServoBridge2.write(17);  // CLOSE 78, [OPEN 17]
-  ServoLift.attach(9);
-  ServoLift.write(0);  // [LOW 0], HIGH 70
-  ServoTorch.attach(44);
-  ServoTorch.write(103);  // LOW 52, [HIGH 103]
-  ServoCrane.attach(10);
-  ServoCrane.write(105);  // LOW 49, [HIGH 105]
+  servo_hatch.attach(2);
+  servo_hatch.write(90);  // [CLOSE 90], OPEN 132
+  servo_bridge1.attach(46);
+  servo_bridge1.write(90);  // CLOSE 170, [OPEN 90]
+  servo_bridge2.attach(45);
+  servo_bridge2.write(17);  // CLOSE 78, [OPEN 17]
+  servo_lift.attach(9);
+  servo_lift.write(0);  // [LOW 0], HIGH 70
+  servo_torch.attach(44);
+  servo_torch.write(103);  // LOW 52, [HIGH 103]
+  servo_crane.attach(10);
+  servo_crane.write(105);  // LOW 49, [HIGH 105]
 
   pinMode(LED_DOME, OUTPUT);
   pinMode(LED_MONITOR, OUTPUT);
@@ -125,8 +113,8 @@ void setup()
   pinMode(LED_3F_MONITOR, OUTPUT);
   pinMode(LED_3F_TORCH, OUTPUT);
 
-  pinMode(SENSOR_NECK, INPUT_PULLUP);
-  pinMode(SENSOR_3F, INPUT_PULLUP);
+  pinMode(HALL_NECK, INPUT_PULLUP);
+  pinMode(HALL_3F, INPUT_PULLUP);
 
   pinMode(SW_JOY_HOIST, INPUT_PULLUP);
   pinMode(SW_JOY_LEFT, INPUT_PULLUP);
@@ -158,13 +146,15 @@ void setup()
 
 void loop()
 {
-  //Crane
+//part: Head
+  //Crane 모니터 LED 제어, 리미트 스위치가 눌렸을 때 꺼짐
   if (digitalRead(SW_LIMIT_LEFT) == LOW || digitalRead(SW_LIMIT_RIGHT) == LOW) {
     digitalWrite(LED_CRANE_MONITOR, LOW);
   }
   else {
     digitalWrite(LED_CRANE_MONITOR, HIGH);
   }
+  //Crane 모터 제어
   if (digitalRead(SW_JOY_RIGHT) == LOW && digitalRead(SW_LIMIT_RIGHT) == HIGH) {
     analogWrite(MOTOR1, 150);
     digitalWrite(MOTOR2, LOW);
@@ -176,34 +166,42 @@ void loop()
   else {
     digitalWrite(MOTOR1, LOW);
     digitalWrite(MOTOR2, LOW);
-    digitalWrite(LED_CRANE_RED1, LOW);
-    digitalWrite(LED_CRANE_RED2, LOW);
   }
 
-  if (digitalRead(SW_JOY_HOIST) == LOW && millis() - lastCraneTime > DELAY_CRANE && craneAngle < 105) {
-    lastCraneTime = millis();
-    craneAngle++;
-    ServoCrane.write(craneAngle);
+  //Crane 서보 제어
+  static int angle_crane = 105;
+  static long last_crane_time = 0;
+
+  //깡 delay 써서 쉬운코드로 바꾸는 것이 가능할수도 -------------------------------------------------------------------------------------------------------
+  if (digitalRead(SW_JOY_HOIST) == LOW && millis() - last_crane_time > DELAY_CRANE && angle_crane < 105) {
+    last_crane_time = millis();
+    angle_crane++;
+    servo_crane.write(angle_crane);
   }
-  else if (digitalRead(SW_JOY_LOWER) == LOW && millis() - lastCraneTime > DELAY_CRANE && craneAngle > 49) {
-    lastCraneTime = millis();
-    craneAngle--;
-    ServoCrane.write(craneAngle);
+  else if (digitalRead(SW_JOY_LOWER) == LOW && millis() - last_crane_time > DELAY_CRANE && angle_crane > 49) {
+    last_crane_time = millis();
+    angle_crane--;
+    servo_crane.write(angle_crane);
   }
 
+  //Crane 조이스틱 작동시 레드 LED 깜빡임
   if (digitalRead(SW_JOY_HOIST) == LOW || digitalRead(SW_JOY_LOWER) == LOW || digitalRead(SW_JOY_LEFT) == LOW || digitalRead(SW_JOY_RIGHT) == LOW) {
-    digitalWrite(LED_CRANE_RED1, (millis() / 150) % 2);
-    digitalWrite(LED_CRANE_RED2, (millis() / 150 + 0) % 2);
+    digitalWrite(LED_CRANE_RED1, (millis() / DELAY_ALARM) % 2);
+    digitalWrite(LED_CRANE_RED2, (millis() / DELAY_ALARM) % 2);
   }
   else {
     digitalWrite(LED_CRANE_RED1, LOW);
     digitalWrite(LED_CRANE_RED2, LOW);
   }
-
-  //Eye
-  int eye_state = (digitalRead(SENSOR_3F) << 1) | digitalRead(SENSOR_NECK);
-
-  if (eye_state == 0b01 && prev_eye_state != 0b01) {  //3f
+  
+  //Hall Sensor 상태 저장 변수, 0은 Air, 1은 Neck, 2는 3F, 이전 상태 저장 변수
+  
+  static int prev_state_hall = 0b11;
+  //3F 센서를 2의 자리로, 목 센서를 1의 자리로 해서 홀센서 상태를 저장
+  int state_hall = (digitalRead(HALL_3F) << 1) | digitalRead(HALL_NECK);
+  
+  //3F로 왔을 경우 
+  if (state_hall == 0b01 && prev_state_hall != 0b01) {  //3f
     mp3_play(3);  // torch
     delay(300);
 
@@ -214,7 +212,7 @@ void loop()
     FastLED.show();
 
     for (int i = 103; i >= 52; i--) {
-      ServoTorch.write(i);
+      servo_torch.write(i);
       delay(5);
     }
     for (int j = 0; j < 3; j++) {
@@ -228,99 +226,124 @@ void loop()
       delay(200);
     }
   }
-  if (eye_state == 0b10 && prev_eye_state != 0b10) {  //Neck
+  //목 위로 왔을 경우
+  if (state_hall == 0b10 && prev_state_hall != 0b10) {  //Neck
     ws_eye[0] = CRGB(250, 0, 255);
     FastLED.show();
   }
-  if (eye_state == 0b11 && prev_eye_state != 0b11) {  //Air
+  //Air 상태로 왔을 경우
+  if (state_hall == 0b11 && prev_state_hall != 0b11) {  //Air
     digitalWrite(LED_3F_MONITOR, LOW);
     ws_eye[0] = CRGB(150, 0, 0);
     FastLED.show();
-    ServoTorch.write(103);
+    servo_torch.write(103);
   }
-  prev_eye_state = eye_state;
+  prev_state_hall = state_hall;
 
+//part: Hatch
+  //해치 상태 저장 변수, 0은 닫힘, 1은 열림, 이전 상태 저장 변수
+  static int state_hatch = 0;
+  static int prev_state_hatch = 0;
+  //열려있을 때
   if (analogRead(POT_HATCH) > 1020) {  //Close
-    hatch_state = 0;
+    state_hatch = 0;
     digitalWrite(LED_DOME, LOW);
     digitalWrite(LED_MONITOR, LOW);
   }
+  //닫혀 있을 때
   else if (analogRead(POT_HATCH) < 700) {  //Open
-    hatch_state = 1;
+    state_hatch = 1;
     if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, HIGH);
     else digitalWrite(LED_DOME, LOW);
     if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, HIGH);
     else digitalWrite(LED_MONITOR, LOW);
   }
-  if (hatch_state == 0 && prev_hatch_state != 0) {  //Close
+  //닫기
+  if (state_hatch == 0 && prev_state_hatch != 0) {  //Close
   mp3_play(8); // hatch open sound
   delay(300);
-    for (int i = 132; i >= 90; i--) {
+    for (int i = 132; i >= 90; i--) { //닫는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
-      ServoHatch.write(i);
-      delay(50);
+      servo_hatch.write(i);
+      delay(DELAY_HATCH);
     }
   }
-  else if (hatch_state == 1 && prev_hatch_state != 1) {  //Open
+  //열기
+  if (state_hatch == 1 && prev_state_hatch != 1) {  //Open
   mp3_play(8);
   delay(300);    
-    for (int i = 90; i <= 132; i++) {
+    for (int i = 90; i <= 132; i++) { //열리는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
-      ServoHatch.write(i);
-      delay(50);
+      servo_hatch.write(i);
+      delay(DELAY_HATCH);
     }
     mp3_play(9);  // MonoEye
   }
-  prev_hatch_state = hatch_state;
+  prev_state_hatch = state_hatch;
 
+//part: Bridge
   //Bridge DOCK-679 UNDOCK-1023
-  bridge_smooth_pot = (0.1 * analogRead(POT_BRIDGE)) + (0.9 * bridge_smooth_pot);
+  
+  static float filtered_pot_bridge = 1023;
+  static int angle_bridge1 = 90;
+  static int wanted_angle_bridge1 = 90;
+  static unsigned long last_bridge_time = 0;
 
-  bridge1WantedAngle = map((int)bridge_smooth_pot, 679, 1023, 170, 90);
+  //센서 노이즈 방어 로직, 0.1은 새 값 가중치, 0.9는 기존 값 가중치
+  filtered_pot_bridge = (0.1 * analogRead(POT_BRIDGE)) + (0.9 * filtered_pot_bridge);
 
+  //목표 각도 설정
+  wanted_angle_bridge1 = map((int)filtered_pot_bridge, 679, 1023, 170, 90);
 
-  if (bridge1Angle != bridge1WantedAngle && (millis() - lastBridgeTime) > DELAY_BRIDGE) {
-    digitalWrite(LED_BRIDGE_RED1, (millis() / 150) % 2);
-    digitalWrite(LED_BRIDGE_RED2, (millis() / 150 + 0) % 2);
+  //목표 각도와 현재 각도가 다르고, 마지막으로 각도를 변경한 지 DELAY_BRIDGE 시간이 지났다면 각도 변경
+  if (angle_bridge1 != wanted_angle_bridge1 && (millis() - last_bridge_time) > DELAY_BRIDGE) {
+    digitalWrite(LED_BRIDGE_RED1, (millis() / DELAY_ALARM) % 2);
+    digitalWrite(LED_BRIDGE_RED2, (millis() / DELAY_ALARM) % 2);
 
-    if (bridge1Angle < bridge1WantedAngle) bridge1Angle++;
-    else bridge1Angle--;
-    ServoBridge1.write(bridge1Angle);
-    ServoBridge2.write(map(bridge1Angle, 170, 90, 78, 17));
-    lastBridgeTime = millis();
+    if (angle_bridge1 < wanted_angle_bridge1) angle_bridge1++;
+    else angle_bridge1--;
+    servo_bridge1.write(angle_bridge1);
+    //bridge1 각도에 따른 servo_bridge2 각도 조정, 170->78, 90->17
+    servo_bridge2.write(map(angle_bridge1, 170, 90, 78, 17));
+    last_bridge_time = millis();
   }
-  if (bridge1Angle == bridge1WantedAngle) {
+  if (angle_bridge1 == wanted_angle_bridge1) {
     digitalWrite(LED_BRIDGE_RED1, LOW);
     digitalWrite(LED_BRIDGE_RED2, LOW);
   }
-  if (bridge1Angle > 160) {
+  //각도가 160 이상일 때 모니터 LED 켜기
+  if (angle_bridge1 > 160) {
     digitalWrite(LED_BRIDGE_MONITOR, HIGH);
   }
   else {
     digitalWrite(LED_BRIDGE_MONITOR, LOW);
   }
-
+//part: Lift | bridge와 동일한 로직,
   //Lift DOWN 3 ~ 1023 Up
-  
-  lift_smooth_pot = (0.1 * analogRead(POT_LIFT)) + (0.9 * lift_smooth_pot);
-  liftWantedAngle = map((int)lift_smooth_pot, 3, 1023, 0, 70);
+  static float filtered_pot_lift = 0;
+  static int angle_lift = 0;
+  static int wanted_angle_lift = 0;
+  static unsigned long last_lift_time = 0;
 
-  if (liftAngle != liftWantedAngle && (millis() - lastLiftTime) > DELAY_LIFT) {
-    digitalWrite(LED_LIFT_RED1, (millis() / 150) % 2);
-    digitalWrite(LED_LIFT_RED2, (millis() / 150 + 0) % 2);
+  filtered_pot_lift = (0.1 * analogRead(POT_LIFT)) + (0.9 * filtered_pot_lift);
+  wanted_angle_lift = map((int)filtered_pot_lift, 3, 1023, 0, 70);
 
-    if (liftAngle < liftWantedAngle) liftAngle++;
-    else liftAngle--;
-    ServoLift.write(liftAngle);
-    lastLiftTime = millis();
+  if (angle_lift != wanted_angle_lift && (millis() - last_lift_time) > DELAY_LIFT) {
+    digitalWrite(LED_LIFT_RED1, (millis() / DELAY_ALARM) % 2);
+    digitalWrite(LED_LIFT_RED2, (millis() / DELAY_ALARM) % 2);
+
+    if (angle_lift < wanted_angle_lift) angle_lift++;
+    else angle_lift--;
+    servo_lift.write(angle_lift);
+    last_lift_time = millis();
   }
-  if (liftAngle == liftWantedAngle) {
+  if (angle_lift == wanted_angle_lift) {
     digitalWrite(LED_LIFT_RED1, LOW);
     digitalWrite(LED_LIFT_RED2, LOW);
   }
-  if (liftAngle > 65) {
+  if (angle_lift > 65) {
     digitalWrite(LED_LIFT_MONITOR, HIGH);
   }
   else {
