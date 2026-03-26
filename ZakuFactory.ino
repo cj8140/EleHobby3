@@ -27,27 +27,27 @@
 #define LED_CRANE_RED1 37     //220ohm/red wire
 #define LED_CRANE_RED2 38     //220ohm/red wire
 #define LED_CRANE_MONITOR 39  //100ohm/blue wire
-Servo servo_crane;             //D10 LOW 49, [HIGH 105]
+Servo servo_crane;            //D10 LOW 49, [HIGH 105]
 
 //LIFT(Aerial Work Platform)
 #define LED_LIFT_MONITOR 33  //100ohm/yellow wire
 #define LED_LIFT_RED1 34     //220ohm/red wire
 #define LED_LIFT_RED2 35     //220ohm/red wire
-Servo servo_lift;             //D9 [LOW 0], HIGH 70
+Servo servo_lift;            //D9 [LOW 0], HIGH 70
 
 //BRIDGE(Cockpit Access Panel)
 #define LED_BRIDGE_MONITOR 51  //100ohm/blue wire
 #define LED_BRIDGE_RED1 52     //220ohm/red wire
 #define LED_BRIDGE_RED2 53     //220ohm/red wire
-Servo servo_bridge1;            //D46 CLOSE 170, [OPEN 90]
-Servo servo_bridge2;            //D45 CLOSE 78, [OPEN 17]
+Servo servo_bridge1;           //D46 CLOSE 170, [OPEN 90]
+Servo servo_bridge2;           //D45 CLOSE 78, [OPEN 17]
 
 //Body
 #define LED_DOME 6     //220ohm/white wire
 #define LED_MONITOR 5  //220ohm/green wire, *4=Blank
-#define HALL_NECK 3  //Hall Sensor
+#define HALL_NECK 3    //Hall Sensor
 #define WS_EYE 36      //Robot Eye WS 2812 ; default = yellow; HALL_NECK 3 = purple; HALL_3F 49 = green;
-Servo servo_hatch;      //D2 [CLOSE 90], OPEN 132
+Servo servo_hatch;     //D2 [CLOSE 90], OPEN 132
 
 CRGB ws_eye[1];
 #define BRIGHTNESS 100  // 밝기 (0~255)
@@ -55,8 +55,8 @@ CRGB ws_eye[1];
 //3F
 #define LED_3F_TORCH 47    //220ohm/yellow wire
 #define LED_3F_MONITOR 48  //100ohm/blue wire
-#define HALL_3F 49       //220ohm/green wire
-Servo servo_torch;          //D44 LOW 52, [HIGH 103]
+#define HALL_3F 49         //220ohm/green wire
+Servo servo_torch;         //D44 LOW 52, [HIGH 103]
 
 //Controller
 #define SW_DOME A3       // Cockpit Dome LED White
@@ -141,12 +141,12 @@ void setup()
   digitalWrite(MOTOR2, LOW);
 
   mp3_play(1);  // produced by
-//  mp3_play(2);  // 0004_factory-ambience.mp3
+  //  mp3_play(2);  // 0004_factory-ambience.mp3
 }
 
 void loop()
 {
-//part: Head
+  //part: Head
   //Crane 모니터 LED 제어, 리미트 스위치가 눌렸을 때 꺼짐
   if (digitalRead(SW_LIMIT_LEFT) == LOW || digitalRead(SW_LIMIT_RIGHT) == LOW) {
     digitalWrite(LED_CRANE_MONITOR, LOW);
@@ -193,26 +193,26 @@ void loop()
     digitalWrite(LED_CRANE_RED1, LOW);
     digitalWrite(LED_CRANE_RED2, LOW);
   }
-  
+
   //Hall Sensor 상태 저장 변수, 0은 Air, 1은 Neck, 2는 3F, 이전 상태 저장 변수
   
 <<<<<<< Updated upstream
   static int prev_state_hall = 0b00;  //불가능상태(두 홀센서 모두 켜짐) 으로 초기화
-=======
-  static int prev_state_hall = 0b00;
+  == == == =
+    static int prev_state_hall = 0b00;
 >>>>>>> Stashed changes
   //3F 센서를 2의 자리로, 목 센서를 1의 자리로 해서 홀센서 상태를 저장
   int state_hall = (digitalRead(HALL_3F) << 1) | digitalRead(HALL_NECK);
-  
-  //3F로 왔을 경우 
+
+  //3F로 왔을 경우
   if (state_hall == 0b01 && prev_state_hall != 0b01) {  //3f
-    mp3_play(3);  // torch
+    mp3_play(3);                                        // torch
     delay(300);
 
     digitalWrite(LED_3F_MONITOR, HIGH);
     digitalWrite(MOTOR1, LOW);
     digitalWrite(MOTOR2, LOW);
-    ws_eye[0] = CRGB(0, 255, 0); // Green color
+    ws_eye[0] = CRGB(0, 255, 0);  // Green color
     FastLED.show();
 
     for (int i = 103; i >= 52; i--) {
@@ -244,7 +244,7 @@ void loop()
   }
   prev_state_hall = state_hall;
 
-//part: Hatch
+  //part: Hatch
   //해치 상태 저장 변수, 0은 닫힘, 1은 열림, 이전 상태 저장 변수
   static int state_hatch = 0;
   static int prev_state_hatch = 0;
@@ -264,9 +264,9 @@ void loop()
   }
   //닫기
   if (state_hatch == 0 && prev_state_hatch != 0) {  //Close
-  mp3_play(8); // hatch open sound
-  delay(300);
-    for (int i = 132; i >= 90; i--) { //닫는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
+    mp3_play(8);                                    // hatch open sound
+    delay(300);
+    for (int i = 132; i >= 90; i--) {  //닫는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       servo_hatch.write(i);
@@ -275,9 +275,9 @@ void loop()
   }
   //열기
   if (state_hatch == 1 && prev_state_hatch != 1) {  //Open
-  mp3_play(8);
-  delay(300);    
-    for (int i = 90; i <= 132; i++) { //열리는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
+    mp3_play(8);
+    delay(300);
+    for (int i = 90; i <= 132; i++) {  //열리는 도중, 각각 스위치 켜져있을 경우 깜빡임 추가
       if (digitalRead(SW_DOME) == LOW) digitalWrite(LED_DOME, i / 7 % 2);
       if (digitalRead(SW_MONITOR) == LOW) digitalWrite(LED_MONITOR, i / 7 % 2);
       servo_hatch.write(i);
@@ -287,9 +287,9 @@ void loop()
   }
   prev_state_hatch = state_hatch;
 
-//part: Bridge
+  //part: Bridge
   //Bridge DOCK-679 UNDOCK-1023
-  
+
   static float filtered_pot_bridge = 1023;
   static int angle_bridge1 = 90;
   static int wanted_angle_bridge1 = 90;
@@ -324,7 +324,7 @@ void loop()
   else {
     digitalWrite(LED_BRIDGE_MONITOR, LOW);
   }
-//part: Lift | bridge와 동일한 로직,
+  //part: Lift | bridge와 동일한 로직,
   //Lift DOWN 3 ~ 1023 Up
   static float filtered_pot_lift = 0;
   static int angle_lift = 0;
