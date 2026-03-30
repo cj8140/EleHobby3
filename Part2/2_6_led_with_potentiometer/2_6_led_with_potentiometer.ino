@@ -7,11 +7,10 @@ void setup()
 
 void loop()
 {
-  int pot_value = analogRead(A1);
-  int led_value = map(pot_value, 0, 1023, 0, 255);
+  int led_value = analogRead(A1) / 4;
   analogWrite(3, led_value);
 
-  Serial.print(pot_value);
+  Serial.print(analogRead(A1));
   Serial.print(" : ");
   Serial.println(led_value);
 
