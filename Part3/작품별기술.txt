@@ -1,0 +1,21 @@
+4f4
+초음파 센서 - 타임아웃
+map - distance to motor speed
+
+k9
+조이스틱 - 가변저항식
+constrain - 증분제어 값 제한
+for-map 응용: 어느 각도 시작이든 원하는 각도로 천천히 복귀
+
+kumamon
+IR 센서
+
+Mak
+터치센서
+버튼 -> 토글식; state
+
+Porter
+millis() -> 블링킹 제어 bool timing = (millis() % 800) / 400 && HIGH;
+
+VF11
+없음

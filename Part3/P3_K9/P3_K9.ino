@@ -1,70 +1,70 @@
 #include <Servo.h>
 
-#define JOYX_PIN A1  //left 0 522
-#define JOYY_PIN A2  //up 0   519
-#define JOYSW_PIN A3
+#define PIN_JOY_X A1  //left 0 522
+#define PIN_JOY_Y A2  //up 0   519
+#define PIN_JOY_SW A3
 
-Servo turret_Servo;  // 180 98 16
-Servo barrel_Servo;  //HIGH 32  99 104    LOW ; Ori HIGH 36 106 108 LOW
+Servo servo_turret;  // 180 98 16
+Servo servo_barrel;  //HIGH 32  99 104    LOW ; Ori HIGH 36 106 108 LOW
 
-int turret_angle = 98;
-int barrel_angle = 99;
+int angle_turret = 98;
+int angle_barrel = 99;
 
 void setup()
 {
-  pinMode(JOYSW_PIN, INPUT_PULLUP);
+  pinMode(PIN_JOY_SW, INPUT_PULLUP);
 
-  turret_Servo.write(98);
-  barrel_Servo.write(99);
+  servo_turret.write(98);
+  servo_barrel.write(99);
 
-  barrel_Servo.attach(9);
-  turret_Servo.attach(10);
+  servo_barrel.attach(9);
+  servo_turret.attach(10);
 }
 
 void loop()
 {
-  if (analogRead(JOYX_PIN) > 720) {  //right
-    turret_angle -= 1;
+  if (analogRead(PIN_JOY_X) > 720) {  //right
+    angle_turret -= 1;
     delay(60);
   }
-  else if (analogRead(JOYX_PIN) < 320) {  //left
-    turret_angle += 1;
+  else if (analogRead(PIN_JOY_X) < 320) {  //left
+    angle_turret += 1;
     delay(60);
   }
-  turret_angle = constrain(turret_angle, 16, 180);
-  turret_Servo.write(turret_angle);
+  angle_turret = constrain(angle_turret, 16, 180);
+  servo_turret.write(angle_turret);
 
-  if (analogRead(JOYY_PIN) > 720) {  //down
-    barrel_angle += 1;
+  if (analogRead(PIN_JOY_Y) > 720) {  //down
+    angle_barrel += 1;
     delay(60);
   }
-  else if (analogRead(JOYY_PIN) < 320) {  //up
-    barrel_angle -= 1;
+  else if (analogRead(PIN_JOY_Y) < 320) {  //up
+    angle_barrel -= 1;
     delay(60);
   }
-  barrel_angle = constrain(barrel_angle, 32, 104);
-  barrel_Servo.write(barrel_angle);
+  angle_barrel = constrain(angle_barrel, 32, 104);
+  servo_barrel.write(angle_barrel);
 
-  if (digitalRead(JOYSW_PIN) == LOW) {                          //천천히 리셋
+  if (digitalRead(PIN_JOY_SW) == LOW) {                          //천천히 리셋
     for (int i = 0; i < 100; i++) {
-      turret_Servo.write(map(i, 0, 100, turret_angle, 98));
-      barrel_Servo.write(map(i, 0, 100, barrel_angle, 99));
+      servo_turret.write(map(i, 0, 100, angle_turret, 98));
+      servo_barrel.write(map(i, 0, 100, angle_barrel, 99));
       delay(10);
     }
-    turret_angle = 98;
-    barrel_angle = 99;
+    angle_turret = 98;
+    angle_barrel = 99;
   }  
 }
 //1 그냥 매핑
-// turret_Servo.write(map(analogRead(JOYX_PIN), 0, 1023, 180, 16));
-// if(analogRead(JOYY_PIN) < 520) {
-//   barrel_Servo.write(map(analogRead(JOYY_PIN), 0, 520, 32, 104));
+// servo_turret.write(map(analogRead(PIN_JOY_X), 0, 1023, 180, 16));
+// if(analogRead(PIN_JOY_Y) < 520) {
+//   servo_barrel.write(map(analogRead(PIN_JOY_Y), 0, 520, 32, 104));
 // }
 
 
 //2 느린 매핑
-  // turret_angle = turret_angle*0.9 + map(analogRead(JOYX_PIN), 0, 1023, 180, 16)*0.1;  //*숫자 두 합 1이 되도록. 앞의 숫자가 클 수록 느려짐
-  // barrel_angle = barrel_angle*0.9 + map(analogRead(JOYY_PIN), 0, 1023, 32, 104)*0.1;
-  // turret_Servo.write(turret_angle);
-  // barrel_Servo.write(barrel_angle);
+  // angle_turret = angle_turret*0.9 + map(analogRead(PIN_JOY_X), 0, 1023, 180, 16)*0.1;  //*숫자 두 합 1이 되도록. 앞의 숫자가 클 수록 느려짐
+  // angle_barrel = angle_barrel*0.9 + map(analogRead(PIN_JOY_Y), 0, 1023, 32, 104)*0.1;
+  // servo_turret.write(angle_turret);
+  // servo_barrel.write(angle_barrel);
   // delay(100);
