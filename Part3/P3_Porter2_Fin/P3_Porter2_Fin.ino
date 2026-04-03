@@ -1,7 +1,6 @@
-//Elehobby3 Coding P3 Porter2 V1.0 2025.05.08 By CJ Park, Fin Code by Kyoji Park 25.10.20
-
-#define PERIOD_BLINK 500
-#define DURATION__ON 200
+//Elehobby3 Coding P3 Porter2 V1.5 2026.04.02 By CJ Park // 헤더 최종날짜로 변경
+#define PERIOD_BLINK 800  // 500->800
+#define DURATION_ON 400   // 200->400 조금빠른듯해서 숫자변경
 
 #define PIN_RELAY 2
 
