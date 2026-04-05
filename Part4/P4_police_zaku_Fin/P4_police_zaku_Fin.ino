@@ -77,7 +77,6 @@ int oldpot = 1;
 
 void loop()
 {
-  
   analogWrite(PIN_LED_EYE, (int)(sin(TWO_PI * (millis() % period_eye) / float(period_eye)) + 1) * 110 + 20);
 
   angle_tilt = constrain(angle_tilt, 48, 127);

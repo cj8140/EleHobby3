@@ -1,23 +1,13 @@
-//Elehobby3 Coding P4 Zaku Factory V0.1 2026.02.21 By Kyoji Park
-//Elehobby3 Coding P4 Zaku Factory V0.2 2026.03.01 By Kyoji Park
-//Elehobby3 Coding P4 Zaku Factory V1.0 2026.03.01 By C.j. Park
-//Elehobby3 Coding P4 Zaku Factory V1.1 2026.03.02 By Kypji Park ; Change bridge1 angle close 134->170, open 51->87 ; Crane 왼쪽붙이기 ; Motor1,2 Analog Write
-//Elehobby3 Coding P4 Zaku Factory V1.2 2026.03.02 By C.J.Park Bridge Angle Adjust, Blinking Cockpit Light.
-//Elehobby3 Coding P4 Zaku Factory V1.3 2026.03.03 By C.J.Park 브릿지 노이즈 방어 로직 수정
-//Elehobby3 Coding P4 Zaku Factory V1.4 2026.03.06 By Kyoji Angle adjust. servo_bridge2 82->78 ; servo_lift 79->70
-//Elehobby3 Coding P4 Zaku Factory V1.5 2026.03.011 By Kyoji Angle adjust. servo_bridge2 open 21->17 ; Add Mp3 player
-
-//Elehobby3 Coding P4 Zaku Factory V1.6 2026.03.011 By C.J.Park 네이밍 수정, 주석 추가
+//Elehobby3 Coding P4 Zaku Factory V1.6 2026.03.011 By C.J.Park
+#include <Servo.h>
+#include <DFPlayer_Mini_Mp3.h>
+#include <FastLED.h>
 
 #define DURATION_CRANE 30     //만큼 켜지고 만큼 꺼지고
 #define DURATION_HATCH 20
 #define DURATION_BRIDGE 20
 #define DURATION_LIFT 40
 #define DURATION_ALARM 150
-
-#include <Servo.h>
-#include <DFPlayer_Mini_Mp3.h>
-#include <FastLED.h>
 
 //CRANE(Overhead Traveling Crane)
 #define MOTOR1 11             //Motor Driver IN1
@@ -68,8 +58,6 @@ Servo servo_torch;         //D44 LOW 52, [HIGH 103]
 #define SW_JOY_LOWER 25  // CRANE Servo UP LOW 49, [HIGH 105]
 #define SW_JOY_LEFT 26   // CRANE Motor
 #define SW_JOY_RIGHT 27  // CRANE Motor
-
-
 
 void setup()
 {
@@ -141,7 +129,6 @@ void setup()
   digitalWrite(MOTOR2, LOW);
 
   mp3_play(1);  // produced by
-  //  mp3_play(2);  // 0004_factory-ambience.mp3
 }
 
 void loop()
