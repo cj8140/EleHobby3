@@ -1,5 +1,5 @@
-#define LED1 2
-#define LED2 3
+#define LED1 3
+#define LED2 5
 
 #define DURATION_BLINK 500
 #define PERIOD_FADING 1000
