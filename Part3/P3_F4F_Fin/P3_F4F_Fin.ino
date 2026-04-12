@@ -3,16 +3,16 @@
 #define PIN_ECHO 4
 #define PIN_IN1 5
 #define PIN_IN2 6
-#define PIN_LED_YELLOW 8
-#define PIN_LED_RED 10
-#define PIN_LED_BLUE 12
+#define PIN_LED_YELLOW1 8
+#define PIN_LED_YELLOW2 10
+#define PIN_LED_YELLOW3 12
 
 void setup() {
   pinMode(PIN_IN1, OUTPUT);
   pinMode(PIN_IN2, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_BLUE, OUTPUT);
+  pinMode(PIN_LED_YELLOW1, OUTPUT);
+  pinMode(PIN_LED_YELLOW2, OUTPUT);
+  pinMode(PIN_LED_YELLOW3, OUTPUT);
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
 
@@ -47,7 +47,7 @@ void loop() {
   digitalWrite(PIN_IN1, 0);  //모터 코드
   analogWrite(PIN_IN2, speed);
 
-  digitalWrite(PIN_LED_YELLOW, distance <= 30);  // 거리를 3구간으로 나누기
-  digitalWrite(PIN_LED_RED, distance <= 20);
-  digitalWrite(PIN_LED_BLUE, distance <= 10);
+  digitalWrite(PIN_LED_YELLOW1, distance <= 30);  // 거리를 3구간으로 나누기
+  digitalWrite(PIN_LED_YELLOW2, distance <= 20);
+  digitalWrite(PIN_LED_YELLOW3, distance <= 10);
 }
