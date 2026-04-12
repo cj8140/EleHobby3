@@ -12,6 +12,9 @@ void setup()
 
 void loop()
 {
-  digitalWrite(LED1, (millis() / DURATION_BLINK) % 2);                  //DURATION_BLINK 만큼 켜지고 DURATION_BLINK 만큼 꺼지고
-  analogWrite(LED2, (int)((sin(TWO_PI * millis() / (float)PERIOD_FADING) + 1.0) * 127.5));
+  int value1 = (millis() / DURATION_BLINK) % 2;
+  int value2 = (int)((sin(TWO_PI * millis() / (float)PERIOD_FADING) + 1.0) * 127.5);
+
+  digitalWrite(LED1, value1);
+  analogWrite(LED2, value2);
 }

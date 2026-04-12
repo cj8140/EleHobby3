@@ -21,23 +21,21 @@ void setup() {
 }
 
 void loop() {
-  long duration, distance;
-  
-  digitalWrite(PIN_TRIG, LOW);    // 트리거 핀을 LOW로 설정하여 초기화
-  delayMicroseconds(2);
-  digitalWrite(PIN_TRIG, HIGH);  // 트리거 핀을 HIGH로 설정하여 초음파 신호 발사
+  digitalWrite(2, LOW);  // 추가
+  delayMicroseconds(2); // 추가
+  digitalWrite(2, HIGH);
   delayMicroseconds(10);
-  digitalWrite(PIN_TRIG, LOW);
-  duration = pulseIn(PIN_ECHO, HIGH, 10000);   // Echo 핀에서 신호가 돌아오는 시간 측정
+  digitalWrite(2, LOW);
 
+  unsigned long duration = pulseIn(4, HIGH);  //트리거 핀 시간측정
+
+  int distance = duration * 0.017; // 측정단위 줄이기
+  
   if(duration == 0) { //Timeout 발생  
     distance = 99;
   }
-
-  else {
-    distance = duration * 0.0344 / 2;  // 거리는 시간 * 속도 / 2로 계산 (속도는 공기 중에서 약 343m/s)
-  }
-  int speed = map(constrain(distance, 10, 30), 10, 30, 255, 0);  //speed 범위 조정
+  distance = constrain(distance, 10, 30);
+  int speed = map(distance, 10, 30, 255, 0);  //speed 범위 조정
 
   Serial.print("Dist: ");
   Serial.print(distance);

@@ -1,6 +1,6 @@
 //Elehobby3 Coding P3 Porter2 V1.5 2026.04.02 By CJ Park // 헤더 최종날짜로 변경
-#define PERIOD_BLINK 800  // 500->800
-#define DURATION_ON 400   // 200->400 조금빠른듯해서 숫자변경
+
+#define DURATION_BLINK 400   // 200->400 조금빠른듯해서 숫자변경
 
 #define PIN_RELAY 2
 
@@ -13,7 +13,7 @@
 #define PIN_LED_LEFT 11
 #define PIN_LED_RIGHT 12
 
-bool hazardOn = 0;
+bool state_hazard = 0;
 
 void setup()
 {
@@ -39,16 +39,16 @@ void loop()
   }
 
   if (digitalRead(PIN_SW_HAZARD) == LOW) {
-    hazardOn = !hazardOn;
+    state_hazard = !state_hazard;
     delay(300);
   }
-  bool timing = (millis() % PERIOD_BLINK) < DURATION_ON;  //%(전체 시간), <(켜져있는 시간)
+  bool light_on = (millis() / DURATION_BLINK) % 2 ;
 
-  bool leftSign = !digitalRead(PIN_SW_LEFT);
-  bool rightSign = !digitalRead(PIN_SW_RIGHT);
+  bool state_left = !digitalRead(PIN_SW_LEFT);
+  bool state_right = !digitalRead(PIN_SW_RIGHT);
 
-  if (hazardOn) {
-    if (timing) {
+  if (state_hazard) {
+    if (light_on) {
       digitalWrite(PIN_LED_LEFT, HIGH);
       digitalWrite(PIN_LED_RIGHT, HIGH);
       digitalWrite(PIN_RELAY, HIGH);
@@ -60,8 +60,8 @@ void loop()
     }
   }
 
-  else if (leftSign) {
-    if (timing) {
+  else if (state_left) {
+    if (light_on) {
       digitalWrite(PIN_LED_LEFT, HIGH);
       digitalWrite(PIN_LED_RIGHT, LOW);
       digitalWrite(PIN_RELAY, HIGH);
@@ -72,8 +72,8 @@ void loop()
     }
   }
 
-  else if (rightSign) {
-    if (timing) {
+  else if (state_right) {
+    if (light_on) {
       digitalWrite(PIN_LED_RIGHT, HIGH);
       digitalWrite(PIN_LED_LEFT, LOW);
       digitalWrite(PIN_RELAY, HIGH);
