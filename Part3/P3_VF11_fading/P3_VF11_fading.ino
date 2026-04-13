@@ -6,7 +6,6 @@
 #define PIN_LED_COCKPIT 5 // Cockpit PWM pin 전원 켜면 상시 켜짐.
 #define PIN_LED_FOOT 6 // Foot Nozzle PWM pin A1의 값에 따라 PIN_LED_FOOT의 밝기가 0~255로 변환 
 
-
 void setup() {
   pinMode(PIN_SW_ROCKET, INPUT_PULLUP);
 
@@ -22,10 +21,10 @@ void loop() {
   if (digitalRead(PIN_SW_ROCKET) == LOW) {
     for(int i = 0; i <= 150; i++) {
       analogWrite(PIN_LED_ROCKET, i);
-      delay(3);
+      delay(10);
     }
-    analogWrite(PIN_LED_ROCKET, 255)
-    delay(1000);
+    analogWrite(PIN_LED_ROCKET, 255);
+    delay(2000);
     for(int i = 255; i >= 0; i--) {
       analogWrite(PIN_LED_ROCKET, i);
       delay(3);

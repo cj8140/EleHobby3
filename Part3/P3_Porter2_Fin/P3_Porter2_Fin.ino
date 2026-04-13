@@ -1,5 +1,4 @@
-//Elehobby3 Coding P3 Porter2 V1.5 2026.04.02 By CJ Park // 헤더 최종날짜로 변경
-
+//Elehobby3 Coding P3 Porter2 V1.5 2026.04.13 By CJ Park // 
 #define DURATION_BLINK 400   // 200->400 조금빠른듯해서 숫자변경
 
 #define PIN_RELAY 2

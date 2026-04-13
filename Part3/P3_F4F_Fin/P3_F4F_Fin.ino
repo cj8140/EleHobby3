@@ -21,13 +21,13 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(2, LOW);  // 추가
+  digitalWrite(PIN_TRIG, LOW);  // 추가
   delayMicroseconds(2); // 추가
-  digitalWrite(2, HIGH);
+  digitalWrite(PIN_TRIG, HIGH);
   delayMicroseconds(10);
-  digitalWrite(2, LOW);
+  digitalWrite(PIN_TRIG, LOW);
 
-  unsigned long duration = pulseIn(4, HIGH);  //트리거 핀 시간측정
+  unsigned long duration = pulseIn(PIN_ECHO, HIGH);  //트리거 핀 시간측정
 
   int distance = duration * 0.017; // 측정단위 줄이기
   
@@ -45,7 +45,7 @@ void loop() {
   digitalWrite(PIN_IN1, 0);  //모터 코드
   analogWrite(PIN_IN2, speed);
 
-  digitalWrite(PIN_LED_YELLOW1, distance <= 30);  // 거리를 3구간으로 나누기
+  digitalWrite(PIN_LED_YELLOW1, distance < 30);  // 거리를 3구간으로 나누기
   digitalWrite(PIN_LED_YELLOW2, distance <= 20);
   digitalWrite(PIN_LED_YELLOW3, distance <= 10);
 }
