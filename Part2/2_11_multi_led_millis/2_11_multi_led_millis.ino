@@ -13,8 +13,8 @@ void setup()
 void loop()
 {
   int value1 = (millis() / DURATION_BLINK) % 2;
-  int value2 = (int)((sin(TWO_PI * millis() / (float)PERIOD_FADING) + 1.0) * 127.5);
-
   digitalWrite(LED1, value1);
+
+  int value2 = (int)((sin(TWO_PI * millis() / (float)PERIOD_FADING) + 1.0) * 127.5);
   analogWrite(LED2, value2);
 }
