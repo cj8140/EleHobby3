@@ -1,0 +1,53 @@
+#include <FastLED.h>
+
+#define PIN_SW_COLOR 2
+#define PIN_SW_MODE 4
+
+#define PIN_LED 6       // LED 스트립 연결 핀
+#define NUM_LEDS 20     // LED 개수
+#define BRIGHTNESS 255  // 밝기 (0~255)
+
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(PIN_SW_COLOR, INPUT_PULLUP);
+  pinMode(PIN_SW_MODE, INPUT_PULLUP);
+
+  FastLED.addLeds<WS2812, PIN_LED, GRB>(leds, NUM_LEDS);
+  FastLED.setBrightness(BRIGHTNESS);
+
+  for(int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CRGB(255, 0, 0);
+  }
+  FastLED.show();
+}
+
+void loop() {
+  if( digitalRead(PIN_SW_MODE)  == LOW) {
+    for(int i = 0; i < NUM_LEDS; i++) {
+      int value_noise = inoise8(millis()/2 + i*1000);
+      if(digitalRead(PIN_SW_COLOR) == LOW) {
+        leds[i] = CRGB(value_noise, value_noise, value_noise);
+      }
+      else {
+        leds[i] = CRGB(value_noise, (int)(value_noise*0.6), (int)(value_noise * 0.05));
+      }
+      // Serial.println(nois_value);
+    }
+  }
+  else {
+    for(int i = 0; i < NUM_LEDS; i++) {
+      if(digitalRead(PIN_SW_COLOR) == LOW) {
+        leds[i] = CRGB(255, 255, 255);
+      }
+      else {
+        leds[i] = CRGB(255, 153, 13);
+      }
+    }
+  }
+  FastLED.show(); 
+  delay(10);
+}
