@@ -10,6 +10,9 @@
 
 CRGB leds[NUM_LEDS];
 
+int value[NUM_LEDS];
+int delta[NUM_LEDS];
+
 void setup() {
   Serial.begin(9600);
 
@@ -21,21 +24,36 @@ void setup() {
 
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CRGB(255, 0, 0);
+    value[i] = 0;
+    delta[i] = 0;
   }
   FastLED.show();
 }
 
 void loop() {
   if( digitalRead(PIN_SW_MODE)  == LOW) {
+    static unsigned long timer = 0;
+    if(millis() - timer > 100) {
+      int who_start = random(0, NUM_LEDS);
+      delta[who_start] = 1;
+      timer = millis();
+    }
     for(int i = 0; i < NUM_LEDS; i++) {
-      int value_noise = inoise8(i*100, millis()/3);
+      value[i] += delta[i];
+      if(value[i] < 0) {
+        delta[i] = 0;
+        value[i] = 0;
+      }
+      if(value[i] > 100) {
+        delta[i] = -1;
+      }
+
       if(digitalRead(PIN_SW_COLOR) == LOW) {
-        leds[i] = CRGB(value_noise, value_noise, value_noise);
+        leds[i] = CRGB(value[i], value[i], value[i]);
       }
       else {
-        leds[i] = CRGB(value_noise, (int)(value_noise*0.5), (int)(value_noise * 0.05));
+        leds[i] = CRGB(value[i], (int)(value[i]*0.5), (int)(value[i] * 0.05));
       }
-      // Serial.println(nois_value);
     }
   }
   else {

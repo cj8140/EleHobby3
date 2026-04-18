@@ -28,7 +28,8 @@ void setup() {
 void loop() {
   if( digitalRead(PIN_SW_MODE)  == LOW) {
     for(int i = 0; i < NUM_LEDS; i++) {
-      int value_noise = inoise8(i*100, millis()/3);
+      int value_noise = inoise8(i*100, millis()/8);
+      value_noise = constrain(value_noise*2-200, 0, 255);
       if(digitalRead(PIN_SW_COLOR) == LOW) {
         leds[i] = CRGB(value_noise, value_noise, value_noise);
       }
