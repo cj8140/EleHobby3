@@ -13,7 +13,8 @@ CRGB leds[NUM_LEDS];
 int value[NUM_LEDS];
 int delta[NUM_LEDS];
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
 
   pinMode(PIN_SW_COLOR, INPUT_PULLUP);
@@ -22,7 +23,7 @@ void setup() {
   FastLED.addLeds<WS2812, PIN_LED, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
-  for(int i = 0; i < NUM_LEDS; i++) {
+  for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CRGB(255, 0, 0);
     value[i] = 0;
     delta[i] = 0;
@@ -30,35 +31,36 @@ void setup() {
   FastLED.show();
 }
 
-void loop() {
-  if( digitalRead(PIN_SW_MODE)  == LOW) {
+void loop()
+{
+  if (digitalRead(PIN_SW_MODE) == LOW) {
     static unsigned long timer = 0;
-    if(millis() - timer > 500) {
+    if (millis() - timer > 200) {
       int who_start = random(0, NUM_LEDS);
-      delta[who_start] = 2;
+      delta[who_start] = 5;
       timer = millis();
     }
-    for(int i = 0; i < NUM_LEDS; i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
       value[i] += delta[i];
-      if(value[i] < 0) {
+      if (value[i] < 0) {
         delta[i] = 0;
         value[i] = 0;
       }
-      if(value[i] > 250) {
-        delta[i] = -2;
+      if (value[i] > 250) {
+        delta[i] = -5;
       }
 
-      if(digitalRead(PIN_SW_COLOR) == LOW) {
+      if (digitalRead(PIN_SW_COLOR) == LOW) {
         leds[i] = CRGB(value[i], value[i], value[i]);
       }
       else {
-        leds[i] = CRGB(value[i], (int)(value[i]*0.5), (int)(value[i] * 0.05));
+        leds[i] = CRGB(value[i], (int)(value[i] * 0.5), (int)(value[i] * 0.05));
       }
     }
   }
   else {
-    for(int i = 0; i < NUM_LEDS; i++) {
-      if(digitalRead(PIN_SW_COLOR) == LOW) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+      if (digitalRead(PIN_SW_COLOR) == LOW) {
         leds[i] = CRGB(255, 255, 255);
       }
       else {
@@ -66,6 +68,6 @@ void loop() {
       }
     }
   }
-  FastLED.show(); 
+  FastLED.show();
   delay(10);
 }
