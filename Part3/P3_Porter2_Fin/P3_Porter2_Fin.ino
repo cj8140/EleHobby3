@@ -36,13 +36,13 @@ void loop()
   else {
     digitalWrite(PIN_LED_LIGHT, LOW);
   }
-
+  
   if (digitalRead(PIN_SW_HAZARD) == LOW) {
     state_hazard = !state_hazard;
     delay(300);
   }
-  bool light_on = (millis() / DURATION_BLINK) % 2 ;
 
+  bool light_on = (millis() / DURATION_BLINK) % 2 ;
   bool state_left = !digitalRead(PIN_SW_LEFT);
   bool state_right = !digitalRead(PIN_SW_RIGHT);
 
