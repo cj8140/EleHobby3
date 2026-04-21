@@ -71,8 +71,8 @@ void loop()
 
   else if (digitalRead(PIN_SW_RIGHT) == LOW) {
     if (light_on) {
-      digitalWrite(PIN_LED_RIGHT, HIGH);
       digitalWrite(PIN_LED_LEFT, LOW);
+      digitalWrite(PIN_LED_RIGHT, HIGH);
       digitalWrite(PIN_RELAY, HIGH);
     }
     else {
@@ -82,8 +82,8 @@ void loop()
   }
 
   else {
-      digitalWrite(PIN_LED_RIGHT, LOW);
       digitalWrite(PIN_LED_LEFT, LOW);
+      digitalWrite(PIN_LED_RIGHT, LOW);
       digitalWrite(PIN_RELAY, LOW);
   }
 }
