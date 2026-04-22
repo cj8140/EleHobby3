@@ -37,17 +37,18 @@ void loop()
     static unsigned long timer = 0;
     if (millis() - timer > 200) {
       int who_start = random(0, NUM_LEDS);
-      delta[who_start] = 5;
+      delta[who_start] = 2;
       timer = millis();
     }
     for (int i = 0; i < NUM_LEDS; i++) {
       value[i] += delta[i];
       if (value[i] < 0) {
-        delta[i] = 0;
         value[i] = 0;
+        delta[i] = 0;
       }
       if (value[i] > 250) {
-        delta[i] = -5;
+        value[i] = 250;
+        delta[i] = -20;
       }
 
       if (digitalRead(PIN_SW_COLOR) == LOW) {
