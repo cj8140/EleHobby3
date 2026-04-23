@@ -42,7 +42,7 @@ void loop() {
   Serial.print("\t\tSpeed: ");
   Serial.println(speed);
 
-  digitalWrite(PIN_IN1, 0);  //모터 코드
+  analogWrite(PIN_IN1, 0);  //모터 코드
   analogWrite(PIN_IN2, speed);
 
   digitalWrite(PIN_LED_YELLOW1, distance < 30);  // 거리를 3구간으로 나누기
