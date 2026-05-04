@@ -8,8 +8,8 @@
 #define PIN_LED_FRONT 11 // Blue LED Blue wire
 
 #define PERIOD_FRONT_LED 3000 // Ori 1000 code from Police Zaku
-#define BRIGHT_SENSOR 40 // Red, Yellow LED
 #define MAX_BRIGHTNESS_FRONT 140 // Blue LED
+#define BRIGHT_SENSOR 40 // Red, Yellow LED
 
 Servo servo_hatch;      //Close 90,  Open 53 <- Ori 91,44
 int state=1;   // for switch toggle
