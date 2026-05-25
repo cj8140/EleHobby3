@@ -13,7 +13,7 @@ void setup() {
   pinMode(PIN_SW_COLOR, INPUT_PULLUP);
   pinMode(PIN_SW_MODE, INPUT_PULLUP);
 
-  FastLED.addLeds<WS2812, PIN_LED, GRB>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2812B, PIN_LED, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
   for(int i = 0; i < NUM_LEDS; i++) {
