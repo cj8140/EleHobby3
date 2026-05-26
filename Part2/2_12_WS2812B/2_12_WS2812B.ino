@@ -1,6 +1,6 @@
 #include <FastLED.h>
 
-#define LED_PIN 3      // LED 스트립 연결 핀
+#define PIN_LED 3      // LED 스트립 연결 핀
 #define NUM_LEDS 1     // LED 개수
 #define BRIGHTNESS 50  
 CRGB leds[NUM_LEDS];
@@ -8,7 +8,7 @@ int state = 0;
 
 void setup() {
   pinMode(2, INPUT_PULLUP);
-  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2812B, PIN_LED, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
   leds[0] = CRGB(255,0,0);
