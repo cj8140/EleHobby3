@@ -45,7 +45,7 @@ void loop()
   angle_barrel = constrain(angle_barrel, 32, 104);
   servo_barrel.write(angle_barrel);
 
-  if (digitalRead(PIN_JOY_SW) == LOW) {                          //천천히 리셋
+  if (digitalRead(PIN_JOY_SW) == LOW) {  //천천히 리셋
     for (int i = 0; i < 100; i++) {
       servo_turret.write(map(i, 0, 100, angle_turret, 98));
       servo_barrel.write(map(i, 0, 100, angle_barrel, 99));
@@ -55,6 +55,7 @@ void loop()
     angle_barrel = 99;
   }  
 }
+//Elehobby3 Coding P3 K9A1_V1.5 2026.04.03 By C.J
 //1 그냥 매핑
 // servo_turret.write(map(analogRead(PIN_JOY_X), 0, 1023, 180, 16));
 // if(analogRead(PIN_JOY_Y) < 520) {

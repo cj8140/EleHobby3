@@ -1,4 +1,3 @@
-//Elehobby3 Coding P3 F4F_V1.0 2025.10.01 By Kyoji Park
 #include <Servo.h>
 
 #define PIN_TOUCH 2 // Red LED Yellow -- wire
@@ -7,8 +6,7 @@
 #define PIN_LED_LEFT 6 // Yellow LED Yellow wire
 #define PIN_LED_FRONT 11 // Blue LED Blue wire
 
-#define PERIOD_FRONT_LED 3000 // Ori 1000 code from Police Zaku
-#define MAX_BRIGHTNESS_FRONT 140 // Blue LED
+#define PERIOD_SIN 3000 // Ori 1000 code from Police Zaku
 #define BRIGHT_SENSOR 40 // Red, Yellow LED
 
 Servo servo_hatch;      //Close 90,  Open 53 <- Ori 91,44
@@ -20,14 +18,13 @@ void setup() {
   servo_hatch.attach(9);
   servo_hatch.write(90);
 
-  analogWrite(PIN_LED_FRONT, MAX_BRIGHTNESS_FRONT);
   analogWrite(PIN_LED_LEFT, BRIGHT_SENSOR);
   analogWrite(PIN_LED_BACK, BRIGHT_SENSOR);
 }
 
 void loop() {
-  int brightness_led_front = (int) ((sin(TWO_PI * millis() / (float)PERIOD_FRONT_LED) + 1.0) * (MAX_BRIGHTNESS_FRONT/2) );
-  analogWrite(PIN_LED_FRONT, brightness_led_front);
+  int led_value = (int) ((sin(TWO_PI * millis() / (float)PERIOD_SIN) + 1.0) * (140/2) );
+  analogWrite(PIN_LED_FRONT, led_value);
 
   if (digitalRead(PIN_TOUCH) == HIGH && state==1) {
     for(int i = BRIGHT_SENSOR; i >= 0; i--) {
@@ -63,3 +60,4 @@ void loop() {
     state=1;
   }
 }
+//Elehobby3 Coding P3 Ma.K_V1.5 2026.05.04 By C.J

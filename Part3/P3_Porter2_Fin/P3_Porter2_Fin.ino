@@ -1,5 +1,4 @@
-//Elehobby3 Coding P3 Porter2 V1.5 2026.04.13 By CJ Park // 
-#define DURATION_BLINK 400   // 200->400 조금빠른듯해서 숫자변경
+#define DURATION_BLINK 400
 
 #define PIN_RELAY 2
 
@@ -87,3 +86,4 @@ void loop()
       digitalWrite(PIN_RELAY, LOW);
   }
 }
+//Elehobby3 Coding P3 Porter2 V1.5 2026.04.13 By CJ Park // 

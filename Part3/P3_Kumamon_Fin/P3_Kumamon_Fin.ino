@@ -1,4 +1,3 @@
-//Elehobby3 Coding P3 Kumamon_V1.0 2025.05.25 By CJ Park, Fin code edited 25.10.20
 #include <Servo.h>
 
 #define PIN_IR_RIGHT 2
@@ -21,66 +20,61 @@ void setup() {
 
 void loop() {
   if(digitalRead(PIN_IR_RIGHT) == LOW) { //Sensing RIGHT----
-    for(int i = 96; i >= 51; i--) {
+    for(int i = 96; i >= 51; i--) {  // Head Center->Right
       servo_head.write(i);
       delay(10);
     }
     delay(500);
 
-//Bow-Start--------------
-    for(int i = 90; i >= 35; i--) {
+    for(int i = 90; i >= 35; i--) {  // Bow Start
       servo_waist.write(i);
       delay(10);
     }
     delay(500);
-    for(int i = 35; i <= 90; i++) {
+    for(int i = 35; i <= 90; i++) {  // Bow Start
       servo_waist.write(i);
       delay(10);
     }
-//Bow-End--------------
 
-    for(int i = 51; i <= 96; i++) {
+    for(int i = 51; i <= 96; i++) {  // Head Right -> Center
       servo_head.write(i);
       delay(10);
     }
   }
 
   if(digitalRead(PIN_IR_CENTER) == LOW) { //Sensing CENTER----
-//Bow-Start--------------
-    for(int i = 90; i >= 35; i--) {
+    for(int i = 90; i >= 35; i--) {  // Bow Start
       servo_waist.write(i);
       delay(10);
     }
     delay(500);
-    for(int i = 35; i <= 90; i++) {
+    for(int i = 35; i <= 90; i++) {// Bow End
       servo_waist.write(i);
       delay(10);
     }
-//Bow-End--------------
   }
 
   if(digitalRead(PIN_IR_LEFT) == LOW) { //Sensing LEFT----
-    for(int i = 96; i <= 141; i++) {
+    for(int i = 96; i <= 141; i++) {  // Head Center->Left
       servo_head.write(i);
       delay(10);
     }
     delay(500);
 
-//Bow-Start--------------
-    for(int i = 90; i >= 35; i--) {
+    for(int i = 90; i >= 35; i--) {  // Bow Start
       servo_waist.write(i);
       delay(10);
     }
     delay(500);
-    for(int i = 35; i <= 90; i++) {
+    for(int i = 35; i <= 90; i++) {  // Bow End
       servo_waist.write(i);
       delay(10);
     }
-//Bow-End--------------
 
-    for(int i = 141; i >= 96; i--) {
+    for(int i = 141; i >= 96; i--) {  // Head Left -> Center
       servo_head.write(i);
       delay(10);
     }
   }
 }
+//Elehobby3 Coding P3 Kumamon_V1.0 2025.05.25 By CJ Park, Fin code edited 25.10.20

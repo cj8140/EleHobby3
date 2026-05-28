@@ -1,4 +1,3 @@
-//Elehobby3 Coding P3 F4F_V1.4 2025.04.08 By CJ Park, Fin code edited 25.10.20
 #define PIN_TRIG 3
 #define PIN_ECHO 4
 #define PIN_IN1 5
@@ -34,7 +33,7 @@ void loop() {
   if(duration == 0) { //Timeout 발생  
     distance = 30;
   }
-  
+
   distance = constrain(distance, 10, 30);
   int speed = map(distance, 10, 30, 255, 0);  //speed 범위 조정
 
@@ -50,3 +49,4 @@ void loop() {
   digitalWrite(PIN_LED_YELLOW2, distance <= 20);
   digitalWrite(PIN_LED_YELLOW3, distance <= 10);
 }
+//Elehobby3 Coding P3 F4F_V1.4 2025.04.08 By CJ Park, Fin code edited 25.10.20
