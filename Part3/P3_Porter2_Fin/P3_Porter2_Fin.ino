@@ -13,8 +13,7 @@
 
 bool state_hazard = 0;
 
-void setup()
-{
+void setup(){
   pinMode(PIN_RELAY, OUTPUT);
 
   pinMode(PIN_LED_LEFT, OUTPUT);
@@ -27,8 +26,7 @@ void setup()
   pinMode(PIN_SW_LIGHT, INPUT_PULLUP);
 }
 
-void loop()
-{
+void loop(){
   if (digitalRead(PIN_SW_LIGHT) == LOW) {
     digitalWrite(PIN_LED_LIGHT, HIGH);
   }
