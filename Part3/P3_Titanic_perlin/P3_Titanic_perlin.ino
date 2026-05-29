@@ -23,7 +23,7 @@ void setup() {
 }
 
 void loop() {
-  if( digitalRead(PIN_SW_MODE)  == LOW) {
+  if( digitalRead(PIN_SW_MODE) == LOW) {
     for(int i = 0; i < NUM_LEDS; i++) {
       int value_noise = inoise8(i*100, millis()/8);
       value_noise = constrain(value_noise*2-200, 0, 255);
@@ -31,21 +31,25 @@ void loop() {
       if(digitalRead(PIN_SW_COLOR) == LOW) {
         leds[i] = CRGB(value_noise, value_noise, value_noise);
       }
+
       else {
-        leds[i] = CRGB(value_noise, (int)(value_noise*0.5), (int)(value_noise * 0.05));
+        leds[i] = CRGB(value_noise, value_noise * 0.5, value_noise * 0.05);
       }
     }
   }
+  
   else {
     for(int i = 0; i < NUM_LEDS; i++) {
       if(digitalRead(PIN_SW_COLOR) == LOW) {
         leds[i] = CRGB(255, 255, 255);
       }
+
       else {
         leds[i] = CRGB(255, 127, 13);
       }
     }
   }
+
   FastLED.show(); 
   delay(10);
 }

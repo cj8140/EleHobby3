@@ -1,4 +1,5 @@
 #include <Servo.h>
+
 Servo my_servo;
 
 void setup()
@@ -15,6 +16,7 @@ void loop()
   if (digitalRead(2) == LOW) {
     my_servo.write(150);
   }
+
   if (digitalRead(4) == LOW) {
     my_servo.write(30);
   }
