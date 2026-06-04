@@ -18,8 +18,8 @@ void setup() {
   servo_hatch.attach(9);
   servo_hatch.write(90);
 
-  analogWrite(PIN_LED_LEFT, BRIGHT_LED);
   analogWrite(PIN_LED_TOP, BRIGHT_LED);
+  analogWrite(PIN_LED_LEFT, BRIGHT_LED);
 }
 
 void loop() {
@@ -28,8 +28,8 @@ void loop() {
 
   if (digitalRead(PIN_TOUCH) == HIGH && state==1) {
     for(int i = BRIGHT_LED; i >= 0; i--) {
-      analogWrite(PIN_LED_LEFT, i);
       analogWrite(PIN_LED_TOP, i);
+      analogWrite(PIN_LED_LEFT, i);
       delay(10);
     }
 
@@ -53,8 +53,8 @@ void loop() {
     analogWrite(PIN_LED_COCKPIT, 0);
 
     for(int i = 0; i <= BRIGHT_LED; i++) {
-      analogWrite(PIN_LED_LEFT, i);
       analogWrite(PIN_LED_TOP, i);
+      analogWrite(PIN_LED_LEFT, i);
       delay(40);
     }
     state=1;
