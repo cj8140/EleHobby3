@@ -1,4 +1,3 @@
-//Elehobby3 Coding P4 Police Zaku V1.2 2025.09.08 By CJ Park
 #include "Servo.h"
 #include <DFPlayer_Mini_Mp3.h>
 
@@ -39,8 +38,7 @@ int delay_servo = 20;
 int period_eye = 2000;
 bool triggered = false;
 
-void setup()
-{
+void setup(){
   servo_tilt.attach(9);
   servo_pan.attach(10);
 
@@ -75,8 +73,7 @@ void setup()
 }
 int oldpot = 1;
 
-void loop()
-{
+void loop(){
   analogWrite(PIN_LED_EYE, (int)(sin(TWO_PI * (millis() % period_eye) / float(period_eye)) + 1) * 110 + 20);
 
   angle_tilt = constrain(angle_tilt, 48, 127);
@@ -139,7 +136,6 @@ void loop()
       servo_pan.write(angle_pan);
       servo_tilt.write(angle_tilt);
       delay(10);
-      Serial.println(angle_tilt);
     }
   }
   delay_servo = map(analogRead(PIN_POT_SPD), 450, 820, 30, 0);
@@ -148,6 +144,7 @@ void loop()
     period_eye = map(pot, 450, 820, 8000, 500);
     oldpot = pot;
   }
+
   if (analogRead(PIN_SW_MODE) < 100) {  //▶singl shot
     if (digitalRead(PIN_SW_TRIGGER) == LOW) {
       if (triggered == false) {
@@ -165,7 +162,6 @@ void loop()
       triggered = false;
     }
   }
-
   else {
     if (digitalRead(PIN_SW_TRIGGER) == LOW) {  //▶▶▶machinegun Mode
       mp3_play(0004);          // single shot
@@ -179,8 +175,7 @@ void loop()
   }
 }
 
-void move_left()
-{
+void move_left(){
   angle_pan += 1;
   //mp3_play(0003);
   servo_pan.write(angle_pan);
@@ -188,11 +183,12 @@ void move_left()
   delay(delay_servo);
 }
 
-void move_right()
-{
+void move_right(){
   angle_pan -= 1;
   //mp3_play(0003);
   servo_pan.write(angle_pan);
   digitalWrite(PIN_LED_V_L, HIGH);
   delay(delay_servo);
 }
+//Elehobby3 Coding P4 Police Zaku V1.2 2025.09.08 By CJ Park
+      // [139] Serial.println(angle_tilt);
