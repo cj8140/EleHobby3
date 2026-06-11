@@ -71,6 +71,7 @@ void setup(){
   delay(50);
   mp3_play(0001);  // alam
 }
+
 int oldpot = 1;
 
 void loop(){
@@ -138,6 +139,7 @@ void loop(){
       delay(10);
     }
   }
+
   delay_servo = map(analogRead(PIN_POT_SPD), 450, 820, 30, 0);
   int pot = analogRead(PIN_POT_SPD);
   if (pot - oldpot < -10 || pot - oldpot > 10) {
