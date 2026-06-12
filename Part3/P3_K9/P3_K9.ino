@@ -60,16 +60,16 @@ void loop() {
   }
 
   else {
-    int turretTarget = map(analogRead(PIN_JOY_X), 0, 1023, 0, 180);
-    if (angle_turret < turretTarget) angle_turret++;
-    if (angle_turret > turretTarget) angle_turret--;
+    int turret_target = map(analogRead(PIN_JOY_X), 0, 1023, 0, 180);
+    if (angle_turret < turret_target) angle_turret++;
+    if (angle_turret > turret_target) angle_turret--;
     servo_turret.write(angle_turret);
 
     int joyY = analogRead(PIN_JOY_Y);
     if (joyY < 520) {
-      int barrelTarget = map(joyY, 0, 520, 32, 104);
-      if (angle_barrel < barrelTarget) angle_barrel++;
-      if (angle_barrel > barrelTarget) angle_barrel--;
+      int barrel_target = map(joyY, 0, 520, 32, 104);
+      if (angle_barrel < barrel_target) angle_barrel++;
+      if (angle_barrel > barrel_target) angle_barrel--;
       servo_barrel.write(angle_barrel);
     }
     delay(20);
