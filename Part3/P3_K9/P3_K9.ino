@@ -66,7 +66,7 @@ void loop() {
     servo_turret.write(angle_turret);
 
     if (analogRead(PIN_JOY_Y) < 520) {
-      int barrel_target = map(analogRead(PIN_JOY_Y), 0, 520, 32, 104);
+      int barrel_target = map(analogRead(PIN_JOY_Y), 0, 520, 32, 99);
       if (angle_barrel < barrel_target) angle_barrel++;
       if (angle_barrel > barrel_target) angle_barrel--;
       servo_barrel.write(angle_barrel);
