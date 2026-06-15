@@ -16,37 +16,25 @@ void setup() {
   FastLED.addLeds<WS2812B, PIN_LED, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
-  for(int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CRGB(0, 0, 0);
-  }
+  FastLED.clear();
   FastLED.show();
 }
 
 void loop() {
   if( digitalRead(PIN_SW_MODE) == LOW) {
     for(int i = 0; i < NUM_LEDS; i++) {
-      int value_noise = inoise8(i*100, millis()/8);
-      value_noise = constrain(value_noise*2-200, 0, 255);
-
-      if(digitalRead(PIN_SW_COLOR) == LOW) {
-        leds[i] = CRGB(value_noise, value_noise, value_noise);
-      }
-
-      else {
-        leds[i] = CRGB(value_noise, value_noise * 0.5, value_noise * 0.05);
-      }
+      if(digitalRead(PIN_SW_COLOR) == LOW) leds[i] = CRGB(255, 255, 255);
+      else leds[i] = CRGB(255, 127, 13);
     }
   }
   
   else {
     for(int i = 0; i < NUM_LEDS; i++) {
-      if(digitalRead(PIN_SW_COLOR) == LOW) {
-        leds[i] = CRGB(255, 255, 255);
-      }
+      int Noise = inoise8(i*100, millis()/6);
+      Noise = constrain(Noise*2-200, 0, 255);
 
-      else {
-        leds[i] = CRGB(255, 127, 13);
-      }
+      if(digitalRead(PIN_SW_COLOR) == LOW) leds[i] = CRGB(Noise, Noise, Noise);
+      else leds[i] = CRGB(Noise, Noise * 0.5, Noise * 0.05);
     }
   }
 
