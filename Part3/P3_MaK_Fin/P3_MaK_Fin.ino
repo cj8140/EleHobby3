@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 #define PIN_TOUCH 2 // Red LED Yellow -- wire
-#define PIN_LED_COCKPIT 3 // War-W LED Orange wire
+#define PIN_LED_COCKPIT 3 // Warm White LED Orange wire
 #define PIN_LED_TOP 5 // Red LED Yellow -- wire
 #define PIN_LED_LEFT 6 // Yellow LED Yellow wire
 #define PIN_LED_FRONT 11 // Blue LED Blue wire
@@ -55,7 +55,7 @@ void loop() {
     for(int i = 0; i <= BRIGHT_LED; i++) {
       analogWrite(PIN_LED_TOP, i);
       analogWrite(PIN_LED_LEFT, i);
-      delay(40);
+      delay(20);
     }
     state=1;
   }
