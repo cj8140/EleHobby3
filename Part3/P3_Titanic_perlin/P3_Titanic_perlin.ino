@@ -5,7 +5,7 @@
 #define PIN_LED 6       // LED 스트립 연결 핀
 
 #define NUM_LEDS 20     // LED 개수
-#define BRIGHTNESS 255  // 밝기 (0~255)
+#define BRIGHTNESS 127  // 밝기 (0~255)
 
 CRGB leds[NUM_LEDS];
 
