@@ -7,7 +7,7 @@
 #define PERIOD_BLINK 200  // Up slow, Down High
 #define DURATION_ON 100
 
-#define PERIOD_CROSSFADING 1000
+#define CROSSFADING 1000
 
 #define PIN_LED_EYE 3  // 0806 Magenta SMD, Yellow Wire
 #define PIN_LED_WARN_R 5  // 0402 Red SMD, Red Wire
@@ -69,13 +69,14 @@ void setup(){
   mp3_set_serial(Serial);
   mp3_set_volume(29);
   delay(50);
-  mp3_play(0001);  // alam
+  mp3_play(1);  // alam
 }
 
 int oldpot = 1;
 
 void loop(){
-  analogWrite(PIN_LED_EYE, (int)(sin(TWO_PI * (millis() % period_eye) / float(period_eye)) + 1) * 110 + 20);
+  int led_value = (int) ((sin(TWO_PI * millis() / (float)period_eye) + 1.0) * 110 + 20); 
+  analogWrite(PIN_LED_EYE, led_value);
 
   angle_tilt = constrain(angle_tilt, 48, 127);
   angle_pan = constrain(angle_pan, 12, 180);
@@ -86,28 +87,21 @@ void loop(){
 
     digitalWrite(PIN_LED_WARN_L, is_blinkable && is_blink_on);
     digitalWrite(PIN_LED_WARN_R, is_blinkable && is_blink_on);
-    if (digitalRead(PIN_SW_STICK_L) == LOW)
-      move_left();
-    else
-      digitalWrite(PIN_LED_V_R, LOW);
-    if (digitalRead(PIN_SW_STICK_R) == LOW)
-      move_right();
-    else
-      digitalWrite(PIN_LED_V_L, LOW);
+
+    if (digitalRead(PIN_SW_STICK_L) == LOW) move_left();
+    else digitalWrite(PIN_LED_V_R, LOW);
+    if (digitalRead(PIN_SW_STICK_R) == LOW) move_right();
+    else digitalWrite(PIN_LED_V_L, LOW);
   }
   else {
-    float sin_value = sin(TWO_PI * float(millis() % PERIOD_CROSSFADING) / float(PERIOD_CROSSFADING));
-    analogWrite(PIN_LED_WARN_L, (int)(sin_value + 1) * 127.5);
-    analogWrite(PIN_LED_WARN_R, (int)(-sin_value + 1) * 127.5);
+    int sin_value = (int) ((sin(TWO_PI * millis() / (float)CROSSFADING) + 1.0) * 127.5);
+    analogWrite(PIN_LED_WARN_L, sin_value);
+    analogWrite(PIN_LED_WARN_R, 255-sin_value);
 
-    if (digitalRead(PIN_SW_STICK_L) == LOW)
-      move_right();
-    else
-      digitalWrite(PIN_LED_V_L, LOW);
-    if (digitalRead(PIN_SW_STICK_R) == LOW)
-      move_left();
-    else
-      digitalWrite(PIN_LED_V_R, LOW);
+    if (digitalRead(PIN_SW_STICK_L) == LOW) move_right();
+    else digitalWrite(PIN_LED_V_L, LOW);
+    if (digitalRead(PIN_SW_STICK_R) == LOW) move_left();
+    else digitalWrite(PIN_LED_V_R, LOW);
   }
 
   if (digitalRead(PIN_SW_STICK_DOWN) == LOW) {  // Tilt LOW limit 127
@@ -116,8 +110,7 @@ void loop(){
     digitalWrite(PIN_LED_V_DOWN, HIGH);
     delay(delay_servo);
   }
-  else
-    digitalWrite(PIN_LED_V_DOWN, LOW);
+  else digitalWrite(PIN_LED_V_DOWN, LOW);
 
   if (digitalRead(PIN_SW_STICK_UP) == LOW) {   // Tilt High limit 48
     angle_tilt -= 1;
@@ -125,8 +118,7 @@ void loop(){
     digitalWrite(PIN_LED_V_UP, HIGH);
     delay(delay_servo);
   }
-  else
-    digitalWrite(PIN_LED_V_UP, LOW);
+  else digitalWrite(PIN_LED_V_UP, LOW);
 
   if (digitalRead(PIN_SW_RESET) == LOW) {
     while (angle_pan != 98 || angle_tilt != 88) {
@@ -140,10 +132,10 @@ void loop(){
     }
   }
 
-  delay_servo = map(analogRead(PIN_POT_SPD), 450, 820, 30, 0);
-  int pot = analogRead(PIN_POT_SPD);
+  delay_servo = map(analogRead(PIN_POT_SPD), 450, 820, 30, 0); //* int pot = analogRead(PIN_POT_SPD);
+  int pot = analogRead(PIN_POT_SPD);                           //* delay_servo = map(pot, 450, 820, 30, 0);
   if (pot - oldpot < -10 || pot - oldpot > 10) {
-    period_eye = map(pot, 450, 820, 8000, 500);
+    period_eye = map(pot, 450, 820, 1000, 200);
     oldpot = pot;
   }
 
@@ -151,7 +143,7 @@ void loop(){
     if (digitalRead(PIN_SW_TRIGGER) == LOW) {
       if (triggered == false) {
         triggered = true;
-        mp3_play(0004);          // single shot
+        mp3_play(4);          // single shot
         digitalWrite(PIN_LED_GUN, HIGH);
         servo_tilt.write(angle_tilt - 5);
         delay(70);
@@ -160,13 +152,12 @@ void loop(){
         delay(100);
       }
     }
-    else {
-      triggered = false;
-    }
+    else triggered = false;
   }
+  
   else {
     if (digitalRead(PIN_SW_TRIGGER) == LOW) {  //▶▶▶machinegun Mode
-      mp3_play(0004);          // single shot
+      mp3_play(4);          // single shot
       digitalWrite(PIN_LED_GUN, HIGH);
       servo_tilt.write(angle_tilt - 5);
       delay(70);
@@ -179,7 +170,6 @@ void loop(){
 
 void move_left(){
   angle_pan += 1;
-  //mp3_play(0003);
   servo_pan.write(angle_pan);
   digitalWrite(PIN_LED_V_R, HIGH);
   delay(delay_servo);
@@ -187,10 +177,9 @@ void move_left(){
 
 void move_right(){
   angle_pan -= 1;
-  //mp3_play(0003);
   servo_pan.write(angle_pan);
   digitalWrite(PIN_LED_V_L, HIGH);
   delay(delay_servo);
 }
-//Elehobby3 Coding P4 Police Zaku V1.2 2025.09.08 By CJ Park
-      // [139] Serial.println(angle_tilt);
+//Elehobby3 Coding P4 Police Zaku V1.8 2026.03.13 By CJ Park
+//Elehobby3 Coding P4 Police Zaku V2.0 2026.07.02 By CJ Park
